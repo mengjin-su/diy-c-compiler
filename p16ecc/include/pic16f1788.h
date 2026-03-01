@@ -174,7 +174,7 @@ typedef struct {
 #define PIR2bits		(PIR2_t*)(&PIR2)
 
 typedef struct {
-	unsigned char dummy  : 4;
+	unsigned char _		 : 4;
 	unsigned char CCP3IF : 1;
 } PIR3_t;
 #define PIR3bits		(PIR3_t*)(&PIR3)
@@ -193,7 +193,7 @@ typedef struct {
 
 typedef struct {
 	unsigned char TMR1ON : 1;
-	unsigned char dummy	 : 1;
+	unsigned char _		 : 1;
 	unsigned char T1SYNC : 1;
 	unsigned char T1OSCEN: 1;
 	unsigned char T1CKPS : 2;
@@ -245,7 +245,7 @@ typedef struct {
 
 typedef struct {
 	unsigned char CCP2IE : 1;
-	unsigned char dummy	 : 1;
+	unsigned char _		 : 1;
 	unsigned char LCDIE	 : 1;
 	unsigned char BCLIE	 : 1;
 	unsigned char EEIE	 : 1;
@@ -256,9 +256,9 @@ typedef struct {
 #define PIE2bits		(PIE2_t*)(&PIE2)
 
 typedef struct {
-	unsigned char dummy1 : 1;
+	unsigned char _		 : 1;
 	unsigned char TMR4IE : 1;
-	unsigned char dummy2 : 1;
+	unsigned char __	 : 1;
 	unsigned char TMR6IE : 1;
 	unsigned char CCP3IE : 1;
 	unsigned char CCP4IE : 1;
@@ -282,7 +282,7 @@ typedef struct {
 	unsigned char RI	 : 1;
 	unsigned char RMCLR	 : 1;
 	unsigned char RWDT	 : 1;
-	unsigned char dummy	 : 1;
+	unsigned char _		 : 1;
 	unsigned char STKUNF : 1;
 	unsigned char STKOVF : 1;
 } PCON_t;
@@ -301,7 +301,7 @@ typedef struct {
 
 typedef struct {
 	unsigned char SCS	 : 2;
-	unsigned char dummy	 : 1;
+	unsigned char _		 : 1;
 	unsigned char IRCF	 : 4;
 	unsigned char SPLLEN : 1;
 } OSCCON_t;
@@ -330,7 +330,7 @@ typedef struct {
 typedef struct {
 	unsigned char ADPREF : 2;
 	unsigned char ADNREF : 1;
-	unsigned char dummy	 : 1;
+	unsigned char _		 : 1;
 	unsigned char ADCS	 : 3;
 	unsigned char ADFM	 : 1;
 } ADCON1_t;
@@ -378,7 +378,7 @@ typedef struct {
 
 typedef struct {
 	unsigned char BORRDY : 1;
-	unsigned char dummy	 : 5;
+	unsigned char _		 : 5;
 	unsigned char BORFS	 : 1;
 	unsigned char SBOREN : 1;
 } BORCON_t;
@@ -397,11 +397,11 @@ typedef struct {
 
 typedef struct {
 	unsigned char DAC1NSS: 1;
-	unsigned char dummy1 : 1;
+	unsigned char _		 : 1;
 	unsigned char DAC1PSS: 2;
 	unsigned char DAC1OE2: 1;
 	unsigned char DAC1OE1: 1;
-	unsigned char dummy2 : 1;
+	unsigned char __	 : 1;
 	unsigned char DAC1EN : 1;
 } DAC1CON0_t;
 #define DAC1CON0bits	(DAC1CON0_t*)(&DAC1CON0)

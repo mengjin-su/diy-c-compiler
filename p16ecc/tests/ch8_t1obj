@@ -1,0 +1,10 @@
+I "F:\p16ecc/include/pic16e"
+I "F:\p16ecc/include/pic16f1788"
+P "pic16f1788" 2048 16384
+E _$$ 10224
+S BANK ABS 8224
+G data1
+R 2
+S BANK ABS 8226
+G data2
+R 2

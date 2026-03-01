@@ -1,0 +1,3 @@
+interrupt isr1()
+{
+}

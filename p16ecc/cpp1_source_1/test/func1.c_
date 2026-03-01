@@ -1,0 +1,8 @@
+#line 1 func.h
+#define ONE  1
+#line 2 func.c
+
+int func()
+{
+    return ONE;
+}

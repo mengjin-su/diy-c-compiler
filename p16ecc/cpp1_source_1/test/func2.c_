@@ -1,0 +1,12 @@
+#line 2 func3.h
+
+#define TWO  2
+#line 2 func2.h
+
+#define ONE  1
+#line 2 func2.c
+
+int func()
+{
+    return ONE + TWO;
+}

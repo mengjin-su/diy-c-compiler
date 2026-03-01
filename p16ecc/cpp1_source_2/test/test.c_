@@ -1,0 +1,7 @@
+#line 1 test.c
+#define ASSIGN(a,b)   a = 10; b = 20;
+#line 3 test.c
+
+char *p = "/* this is not a comment */";  
+#line 4 test.c
+

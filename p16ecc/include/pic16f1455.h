@@ -169,7 +169,7 @@ typedef struct {
 typedef struct {
 	unsigned char TMR1IF	: 1;
 	unsigned char TMR2IF	: 1;
-	unsigned char dummy		: 1;
+	unsigned char _			: 1;
 	unsigned char SSPIF		: 1;
 	unsigned char TXIF		: 1;
 	unsigned char RCIF		: 1;
@@ -179,11 +179,11 @@ typedef struct {
 #define PIR1bits		(PIR1_t*)(&PIR1)
 
 typedef struct {
-	unsigned char dummy1	: 1;
+	unsigned char _			: 1;
 	unsigned char ACTIF		: 1;
 	unsigned char USBIF		: 1;
 	unsigned char BCLIF		: 1;
-	unsigned char dummy2	: 1;
+	unsigned char __		: 1;
 	unsigned char C1IF		: 1;
 	unsigned char C2IF		: 1;
 	unsigned char OSFIF		: 1;
@@ -192,7 +192,7 @@ typedef struct {
 
 typedef struct {
 	unsigned char TMR1ON	: 1;
-	unsigned char dummy		: 1;
+	unsigned char _			: 1;
 	unsigned char T1SYNC	: 1;
 	unsigned char T1OSCEN	: 1;
 	unsigned char T1CKPS	: 2;
@@ -222,7 +222,7 @@ typedef struct {
 typedef struct {
 	unsigned char TMR1IE	: 1;
 	unsigned char TMR2IE	: 1;
-	unsigned char dummy		: 1;
+	unsigned char _			: 1;
 	unsigned char SSPIE		: 1;
 	unsigned char TXIE		: 1;
 	unsigned char RCIE		: 1;
@@ -232,11 +232,11 @@ typedef struct {
 #define PIE1bits		(PIE1_t*)(&PIE1)
 
 typedef struct {
-	unsigned char dummy1	: 1;
+	unsigned char _			: 1;
 	unsigned char ACTIE		: 1;
 	unsigned char USBIE		: 1;
 	unsigned char BCLIE		: 1;
-	unsigned char dummy2	: 1;
+	unsigned char __		: 1;
 	unsigned char C1IE		: 1;
 	unsigned char C2IE		: 1;
 	unsigned char OSFIE		: 1;
@@ -259,7 +259,7 @@ typedef struct {
 	unsigned char RI		: 1;
 	unsigned char RMCLR		: 1;
 	unsigned char RWDT		: 1;
-	unsigned char dummy		: 1;
+	unsigned char _			: 1;
 	unsigned char STKUNF	: 1;
 	unsigned char STKOVF	: 1;
 } PCON_t;
@@ -287,7 +287,7 @@ typedef struct {
 typedef struct {
 	unsigned char HFIOFS	: 1;
 	unsigned char LFIOFR	: 1;
-	unsigned char dummy		: 2;
+	unsigned char _			: 2;
 	unsigned char HFIOFR	: 1;
 	unsigned char OSTS		: 1;
 	unsigned char PLLRDY	: 1;
@@ -304,7 +304,7 @@ typedef struct {
 
 typedef struct {
 	unsigned char ADPREF	: 2;
-	unsigned char dummy		: 2;
+	unsigned char _			: 2;
 	unsigned char ADCS		: 3;
 	unsigned char ADFM		: 1;
 } ADCON1_t;
@@ -314,7 +314,7 @@ typedef struct {
 	unsigned char SYNC		: 1;
 	unsigned char HYS		: 1;
 	unsigned char SP		: 1;
-	unsigned char dummy		: 1;
+	unsigned char _			: 1;
 	unsigned char POL		: 1;
 	unsigned char OE		: 1;
 	unsigned char OUT		: 1;
@@ -325,7 +325,7 @@ typedef struct {
 
 typedef struct {
 	unsigned char NCH		: 3;
-	unsigned char dummy		: 1;
+	unsigned char _			: 1;
 	unsigned char PCH		: 2;
 	unsigned char INTN		: 1;
 	unsigned char INTP		: 1;
@@ -341,7 +341,7 @@ typedef struct {
 
 typedef struct {
 	unsigned char BORRDY	: 1;
-	unsigned char dummy		: 5;
+	unsigned char _			: 5;
 	unsigned char BORFS		: 1;
 	unsigned char SBOREN	: 1;
 } BORCON_t;
@@ -358,11 +358,11 @@ typedef struct {
 #define FVRCONbits		(FVRCON_t*)(&FVRCON)
 
 typedef struct {
-	unsigned char dummy1	: 2;
+	unsigned char _			: 2;
 	unsigned char DACPSS	: 2;
 	unsigned char DACOE2	: 1;
 	unsigned char DACOE1	: 1;
-	unsigned char dummy2	: 1;
+	unsigned char __		: 1;
 	unsigned char DACEN		: 1;
 } DACCON0_t;
 #define DACCON0bits		(DACCON0_t*)(&DACCON0)
@@ -373,7 +373,7 @@ typedef struct {
 #define DACCON1bits		(DACCON1_t*)(&DACCON1)
 
 typedef struct {
-	unsigned char dummy		: 4;
+	unsigned char _			: 4;
 	unsigned char CKP		: 1;
 	unsigned char SSPEN		: 1;
 	unsigned char SSPOV		: 1;
@@ -418,7 +418,7 @@ typedef struct {
 #define SSP1STATbits	(SSP1STAT_t*)(&SSP1STAT)
 
 typedef struct {
-	unsigned char dummy		: 4;
+	unsigned char _			: 4;
 	unsigned char POL		: 1;
 	unsigned char OUT		: 1;
 	unsigned char OE		: 1;
@@ -428,10 +428,10 @@ typedef struct {
 #define PWM2CONbits		(PWM1CON_t*)(&PWM2CON)
 
 typedef struct {
-	unsigned char dummy1	: 2;
+	unsigned char _			: 2;
 	unsigned char P2SEL		: 1;
 	unsigned char T1GSEL	: 1;
-	unsigned char dummy2	: 1;
+	unsigned char __		: 1;
 	unsigned char SSSEL		: 1;
 	unsigned char SDOSEL	: 1;
 	unsigned char CLKRSEL	: 1;
@@ -439,7 +439,7 @@ typedef struct {
 #define APFCONbits		(APFCON_t*)(&APFCON)
 
 typedef struct {
-	unsigned char dummy		: 1;
+	unsigned char _			: 1;
 	unsigned char SUSPND	: 1;
 	unsigned char RESUME	: 1;
 	unsigned char USBEN		: 1;
@@ -450,7 +450,7 @@ typedef struct {
 #define UCONbits		(UCON_t*)(&UCON)
 
 typedef struct {
-	unsigned char dummy		: 1;
+	unsigned char _			: 1;
 	unsigned char PPBI		: 1;
 	unsigned char DIR		: 1;
 	unsigned char ENDP		: 4;
@@ -471,9 +471,9 @@ typedef struct {
 typedef struct {
 	unsigned char PPB		: 2;
 	unsigned char FSEN		: 1;
-	unsigned char dummy1	: 1;
+	unsigned char _			: 1;
 	unsigned char UPUEN		: 1;
-	unsigned char dummy2	: 2;
+	unsigned char __		: 2;
 	unsigned char UTEYE		: 1;
 } UCFG_t;
 #define UCFGbits		(UCFG_t*)(&UCFG)
@@ -495,7 +495,7 @@ typedef struct {
 	unsigned char CRC16EF	: 1;
 	unsigned char DNF8EF	: 1;
 	unsigned char BTOEF		: 1;
-	unsigned char dummy		: 2;
+	unsigned char _			: 2;
 	unsigned char BTSEF		: 1;
 } UEIR_t;
 #define UEIRbits		(UEIR_t*)(&UEIR)
@@ -506,7 +506,7 @@ typedef struct {
 	unsigned char CRC16EE	: 1;
 	unsigned char DNF8EE	: 1;
 	unsigned char BTOEE		: 1;
-	unsigned char dummy		: 2;
+	unsigned char _			: 2;
 	unsigned char BTSEE		: 1;
 } UEIE_t;
 #define UEIEbits		(UEIE_t*)(&UEIE)

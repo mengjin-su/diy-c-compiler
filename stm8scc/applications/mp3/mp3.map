@@ -1,0 +1,3258 @@
+>>>>>>>>>>>> MAP OUTPUT <<<<<<<<<<<<
+
+- DATA MEMORY 94 bytes(4.59%) used
+fat.obj  MMC_Buf (38): 0x13
+fat.obj  file_desc (14): 0x39
+fat.obj  fat_info (16): 0x47
+fat.obj  MAX_CLUSTER (4): 0x57
+key.obj  KEY_stat (1): 0x6
+key.obj  KEY_val (1): 0x7
+vs1011.obj  vs1011_vol_reg (1): 0x8
+play.obj  play_state (1): 0x9
+play.obj  PLAY_ctrlBlk (7): 0xA
+timer.obj  Timer0 (2): 0x11
+key.obj  KEY_scan_$1_key_hold (1): 0x5B
+key.obj  KEY_scan_$2_key_time (2): 0x5C
+
+- CODE MEMORY 5877 bytes(17.94%) used
+
+Functions and Addresses
+init ............................ 08080
+main ............................ 080B4
+ding ............................ 081EC
+SPI_init ........................ 08238
+SPI_write ....................... 0827D
+SPI_read ........................ 0829F
+ENABLE_SPI2 ..................... 082C3
+DISABLE_SPI2 .................... 082CC
+SPI2_write ...................... 082D1
+SPI_burst ....................... 082F2
+delay ........................... 08309
+MEMCMP_ROM ...................... 0831B
+endian32 ........................ 0835F
+endian16 ........................ 08397
+fatClusterToSector .............. 083B5
+fatNextCluster .................. 083F8
+fatInit ......................... 08486
+FAT_EntryType ................... 0867C
+FILE_searchMP3Files ............. 086DA
+FAT_searchMP3FilesDir ........... 087B2
+FILE_searchMP3File .............. 08910
+FAT_searchMP3FileDir ............ 08A29
+getMP3Info ...................... 08BBA
+CheckSignature .................. 08C2C
+FILE_nextFileSector ............. 08C5B
+KEY_init ........................ 08D04
+KEY_scan ........................ 08D11
+KEY_get ......................... 08DAC
+VS1011_init ..................... 08DB9
+VS1011_reset .................... 08DC8
+VS1011_setVol ................... 08DE1
+VS1011_incVol ................... 08E03
+VS1011_decVol ................... 08E1B
+VS1011_wrReg .................... 08E35
+PLAY_init ....................... 08E74
+PLAY_music ...................... 08EAD
+PLAY_fade_out ................... 08F38
+MMC_ExecCmd ..................... 08F69
+MMC_Init ........................ 09047
+MMC_ReadSegment ................. 09092
+MMC_SkipSegment ................. 090FC
+MMC_ReadSegOffset ............... 09152
+MMC_ReadSegOffsetLength ......... 091D4
+MMC_NextSector .................. 0924E
+MMC_dumpSegment ................. 09297
+MMC_flushSector ................. 092AC
+MMC_endAck ...................... 092C1
+tm4_isr ......................... 092D2
+TMR0_Init ....................... 09320
+_mul32Ptr ....................... 09335
+ballon_snd ...................... 093B1
+
+                        (main.obj line#30, 4 bytes)
+08000: 82 00 80 B4          .vect   0x80B4 {main}
+                        (timer.obj line#7, 4 bytes)
+08064: 82 00 92 D2          .vect   0x92D2 {tm4_isr}
+                        (main.obj line#4, 52 bytes)
+                        init::
+                        ; :: main.c #23: CLK_ECKR |= 1
+08080: 72 10 50 C1          bset    0x50C1, #0
+                        _$L2:
+                        ; :: main.c #24: while ( !(CLK_ECKR & 2) 
+08084: 72 03 50 C1 FB       btjf    0x50C1, #1, 0x8084 {_$L2}
+                        ; :: main.c #24: ; ; :: main.c #26: CLK_CKDIVR &= 0xf8
+08089: C6 50 C6             ld      A, 0x50C6
+0808C: A4 F8                and     A, #0xF8
+0808E: C7 50 C6             ld      0x50C6, A
+                        ; :: main.c #28: CLK_SWR = 0XB4
+08091: 35 B4 50 C4          mov     0x50C4, #0xB4
+                        _$L5:
+                        ; :: main.c #29: while ( !(CLK_SWCR & 8) 
+08095: 72 07 50 C5 FB       btjf    0x50C5, #3, 0x8095 {_$L5}
+                        ; :: main.c #29: ; ; :: main.c #31: CLK_SWCR |= 2
+0809A: 72 12 50 C5          bset    0x50C5, #1
+                        ; :: main.c #33: LED_CFG_DDR
+0809E: 72 10 50 11          bset    0x5011, #0
+                        ; :: main.c #34: SPI_init ()
+080A2: CD 82 38             call    0x8238 {SPI_init}
+                        ; :: main.c #35: TMR0_Init()
+080A5: CD 93 20             call    0x9320 {TMR0_Init}
+                        ; :: main.c #36: KEY_init ()
+080A8: CD 8D 04             call    0x8D04 {KEY_init}
+                        ; :: main.c #37: VS1011_RST_CFG
+080AB: 72 1E 50 07          bset    0x5007, #7
+080AF: 72 1E 50 08          bset    0x5008, #7
+080B3: 81                   ret
+                        (main.obj line#36, 312 bytes)
+                        main::
+080B4: AE 07 FF             ldw     X, #0x7FF
+080B7: 94                   ldw     SP, X
+080B8: 7F                   clr     (X)
+080B9: 5A                   decw    X
+080BA: 2A FC                jrpl    0x80B8
+080BC: CD 93 A8             call    0x93A8 {_$init$}
+080BF: 52 09                sub     SP, #0x9
+                        ; :: main.c #48: init()
+080C1: CD 80 80             call    0x8080 {init}
+                        ; :: main.c #49: SEI()
+080C4: 9A                   rim
+                        ; :: main.c #51: play_state = PLAY_INIT
+080C5: 35 03 00 09          mov     0x9 {play_state}, #0x3
+                        ; :: main.c #54: VS1011_RST_LO
+080C9: 72 1F 50 05          bres    0x5005, #7
+                        ; :: main.c #55: for (t = Timer0
+080CD: BE 11                ldw     X, 0x11 {Timer0}
+080CF: 1F 06                ldw     (6, SP), X
+                        _$L9:
+                        ; :: main.c #55: t == Timer0
+080D1: 1E 06                ldw     X, (6, SP)
+080D3: B3 11                cpw     X, 0x11 {Timer0}
+                        _$L78:
+080D5: 27 FA                jreq    0x80D1 {_$L9}
+                        _$L79:
+                        ; :: main.c #55: ; ; :: main.c #56: VS1011_RST_HI
+080D7: 72 1E 50 05          bset    0x5005, #7
+                        ; :: main.c #58: VS1011_init()
+080DB: CD 8D B9             call    0x8DB9 {VS1011_init}
+                        ; :: main.c #59: delay()
+080DE: CD 83 09             call    0x8309 {delay}
+                        _$L13:
+                        ; :: main.c #65: if ( !fatInit() 
+080E1: CD 84 86             call    0x8486 {fatInit}
+080E4: B6 00                ld      A, 0x0
+080E6: 26 05                jrne    0x80ED {_$L18}
+                        ; :: main.c #67: delay()
+080E8: CD 83 09             call    0x8309 {delay}
+                        ; :: main.c #68: continue
+080EB: 20 F4                jra     0x80E1 {_$L13}
+                        _$L18:
+                        ; :: main.c #71: = FILE_searchMP3Files()
+080ED: CD 86 DA             call    0x86DA {FILE_searchMP3Files}
+080F0: BE 00                ldw     X, 0x0
+080F2: 1F 02                ldw     (2, SP), X
+                        ; :: main.c #72: index = 1
+080F4: AE 00 01             ldw     X, #0x1
+080F7: 1F 04                ldw     (4, SP), X
+                        ; :: main.c #73: VS1011_setVol(35)
+080F9: 4B 23                push    #0x23
+080FB: CD 8D E1             call    0x8DE1 {VS1011_setVol}
+080FE: 84                   pop     A
+                        _$L20:
+                        ; :: main.c #76: while ( files 
+080FF: 1E 02                ldw     X, (2, SP)
+08101: 27 DE                jreq    0x80E1 {_$L13}
+                        ; :: main.c #78: if ( play_state == PLAY_INIT || play_state == PLAY_DONE 
+08103: B6 09                ld      A, 0x9 {play_state}
+08105: A1 03                cp      A, #0x3
+                        _$L80:
+08107: 27 06                jreq    0x810F {_$L83}
+                        _$L81:
+08109: B6 09                ld      A, 0x9 {play_state}
+0810B: A1 01                cp      A, #0x1
+                        _$L82:
+0810D: 26 39                jrne    0x8148 {_$L38}
+                        _$L83:
+                        _$L23:
+                        ; :: main.c #80: if ( index > files 
+0810F: 1E 04                ldw     X, (4, SP)
+08111: 13 02                cpw     X, (2, SP)
+08113: 23 07                jrule   0x811C {_$L28}
+                        ; :: main.c #81: index = 1
+08115: AE 00 01             ldw     X, #0x1
+08118: 1F 04                ldw     (4, SP), X
+0811A: 20 08                jra     0x8124 {_$L31}
+                        _$L28:
+                        ; :: main.c #82: else if ( index == 0 
+0811C: 1E 04                ldw     X, (4, SP)
+0811E: 26 04                jrne    0x8124 {_$L31}
+                        ; :: main.c #83: index = files
+08120: 1E 02                ldw     X, (2, SP)
+08122: 1F 04                ldw     (4, SP), X
+                        _$L31:
+                        ; :: main.c #85: = FILE_searchMP3File(index)
+08124: 1E 04                ldw     X, (4, SP)
+08126: 89                   pushw   X
+08127: CD 89 10             call    0x8910 {FILE_searchMP3File}
+0812A: 85                   popw    X
+0812B: BE 00                ldw     X, 0x0
+0812D: 1F 08                ldw     (8, SP), X
+                        ; :: main.c #87: if ( f == NULL 
+0812F: 1E 08                ldw     X, (8, SP)
+08131: 27 AE                jreq    0x80E1 {_$L13}
+                        ; :: main.c #88: break; ; :: main.c #90: (f)
+08133: 1E 08                ldw     X, (8, SP)
+08135: 89                   pushw   X
+08136: CD 8E 74             call    0x8E74 {PLAY_init}
+08139: 85                   popw    X
+                        ; :: main.c #92: if ( play_state == PLAY_INIT 
+0813A: B6 09                ld      A, 0x9 {play_state}
+0813C: A1 03                cp      A, #0x3
+                        _$L84:
+0813E: 26 06                jrne    0x8146 {_$L37}
+                        _$L85:
+                        ; :: main.c #93: play_state = PLAY_READY
+08140: 35 04 00 09          mov     0x9 {play_state}, #0x4
+08144: 20 02                jra     0x8148 {_$L38}
+                        _$L37:
+                        ; :: main.c #95: else					play_state = PLAY_RUN
+08146: 3F 09                clr     0x9 {play_state}
+                        _$L38:
+                        ; :: main.c #98: ( play_state != PLAY_RUN 
+08148: B6 09                ld      A, 0x9 {play_state}
+0814A: 27 50                jreq    0x819C {_$L40}
+                        ; :: main.c #100: key = KEY_get()
+0814C: CD 8D AC             call    0x8DAC {KEY_get}
+0814F: B6 00                ld      A, 0x0
+08151: 6B 01                ld      (1, SP), A
+                        ; :: main.c #103: switch ( key )			
+08153: 7B 01                ld      A, (1, SP)
+                        ; :: main.c #104: case KEY_UP
+08155: A1 02                cp      A, #0x2
+08157: 27 0A                jreq    0x8163 {_$L43}
+                        ; :: main.c #105: case KEY_DOWN
+08159: A1 04                cp      A, #0x4
+0815B: 27 0D                jreq    0x816A {_$L44}
+                        ; :: main.c #106: case KEY_PLAY
+0815D: A1 01                cp      A, #0x1
+0815F: 27 10                jreq    0x8171 {_$L45}
+08161: 20 10                jra     0x8173 {_$L42}
+                        _$L43:
+                        ; :: main.c #104: index++
+08163: 1E 04                ldw     X, (4, SP)
+08165: 5C                   incw    X
+08166: 1F 04                ldw     (4, SP), X
+                        ; :: main.c #104: break
+08168: 20 09                jra     0x8173 {_$L42}
+                        _$L44:
+                        ; :: main.c #105: index--
+0816A: 1E 04                ldw     X, (4, SP)
+0816C: 5A                   decw    X
+0816D: 1F 04                ldw     (4, SP), X
+                        ; :: main.c #105: break
+0816F: 20 02                jra     0x8173 {_$L42}
+                        _$L45:
+                        ; :: main.c #106: play_state = PLAY_RUN
+08171: 3F 09                clr     0x9 {play_state}
+                        _$L42:
+                        ; :: main.c #111: if ( key == KEY_UP || key == KEY_DOWN 
+08173: 7B 01                ld      A, (1, SP)
+08175: A1 02                cp      A, #0x2
+                        _$L86:
+08177: 27 06                jreq    0x817F {_$L89}
+                        _$L87:
+08179: 7B 01                ld      A, (1, SP)
+0817B: A1 04                cp      A, #0x4
+                        _$L88:
+0817D: 26 80                jrne    0x80FF {_$L20}
+                        _$L89:
+                        _$L46:
+                        ; :: main.c #114: if ( play_state == PLAY_PAUSE 
+0817F: B6 09                ld      A, 0x9 {play_state}
+08181: A1 02                cp      A, #0x2
+                        _$L90:
+08183: 26 0D                jrne    0x8192 {_$L51}
+                        _$L91:
+                        ; :: main.c #116: PLAY_fade_out()
+08185: CD 8F 38             call    0x8F38 {PLAY_fade_out}
+                        ; :: main.c #117: MMC_flushSector(PLAY_ctrlBlk.fileDesc->segment)
+08188: CE 00 0F             ldw     X, 0xF
+0818B: E6 0D                ld      A, (13, X)
+0818D: 88                   push    A
+0818E: CD 92 AC             call    0x92AC {MMC_flushSector}
+08191: 84                   pop     A
+                        _$L51:
+                        ; :: main.c #120: ()
+08192: CD 81 EC             call    0x81EC {ding}
+                        ; :: main.c #121: play_state = PLAY_INIT
+08195: 35 03 00 09          mov     0x9 {play_state}, #0x3
+                        ; :: main.c #124: 
+08199: CC 80 FF             jp      0x80FF {_$L20}
+                        _$L40:
+                        ; :: main.c #129: play_state = PLAY_music()
+0819C: CD 8E AD             call    0x8EAD {PLAY_music}
+0819F: 45 00 09             mov     0x0, 0x0
+                        ; :: main.c #131: if ( play_state == PLAY_RUN 
+081A2: B6 09                ld      A, 0x9 {play_state}
+081A4: 26 21                jrne    0x81C7 {_$L59}
+                        ; :: main.c #134: switch ( KEY_get() )				
+081A6: CD 8D AC             call    0x8DAC {KEY_get}
+081A9: B6 00                ld      A, 0x0
+                        ; :: main.c #135: case KEY_UP
+081AB: A1 02                cp      A, #0x2
+081AD: 27 0A                jreq    0x81B9 {_$L60}
+                        ; :: main.c #136: case KEY_DOWN
+081AF: A1 04                cp      A, #0x4
+081B1: 27 0B                jreq    0x81BE {_$L61}
+                        ; :: main.c #137: case KEY_PLAY
+081B3: A1 01                cp      A, #0x1
+081B5: 27 0C                jreq    0x81C3 {_$L62}
+081B7: 20 0E                jra     0x81C7 {_$L59}
+                        _$L60:
+                        ; :: main.c #135: VS1011_incVol()
+081B9: CD 8E 03             call    0x8E03 {VS1011_incVol}
+                        ; :: main.c #135: break
+081BC: 20 09                jra     0x81C7 {_$L59}
+                        _$L61:
+                        ; :: main.c #136: VS1011_decVol()
+081BE: CD 8E 1B             call    0x8E1B {VS1011_decVol}
+                        ; :: main.c #136: break
+081C1: 20 04                jra     0x81C7 {_$L59}
+                        _$L62:
+                        ; :: main.c #137: play_state = PLAY_PAUSE
+081C3: 35 02 00 09          mov     0x9 {play_state}, #0x2
+                        ; :: main.c #137: break
+                        _$L59:
+                        ; :: main.c #141: while ( play_state == PLAY_RUN 
+081C7: B6 09                ld      A, 0x9 {play_state}
+081C9: 27 D1                jreq    0x819C {_$L40}
+                        ; :: main.c #143: if ( play_state != PLAY_PAUSE 
+081CB: B6 09                ld      A, 0x9 {play_state}
+081CD: A1 02                cp      A, #0x2
+                        _$L92:
+081CF: 27 03                jreq    0x81D4 {_$L64}
+                        _$L93:
+                        ; :: main.c #144: PLAY_fade_out()
+081D1: CD 8F 38             call    0x8F38 {PLAY_fade_out}
+                        _$L64:
+                        ; :: main.c #146: ( play_state == PLAY_DONE || play_state == PLAY_ERR 
+081D4: B6 09                ld      A, 0x9 {play_state}
+081D6: A1 01                cp      A, #0x1
+                        _$L94:
+081D8: 27 03                jreq    0x81DD {_$L66}
+                        _$L95:
+081DA: CC 80 FF             jp      0x80FF {_$L20}
+                        _$L66:
+                        ; :: main.c #148: play_state = PLAY_DONE
+081DD: 35 01 00 09          mov     0x9 {play_state}, #0x1
+                        ; :: main.c #149: index++
+081E1: 1E 04                ldw     X, (4, SP)
+081E3: 5C                   incw    X
+081E4: 1F 04                ldw     (4, SP), X
+081E6: CC 80 FF             jp      0x80FF {_$L20}
+081E9: 5B 09                add     SP, #0x9
+                        _$iret$::
+081EB: 80                   iret
+                        (main.obj line#238, 76 bytes)
+                        ding::
+081EC: 52 06                sub     SP, #0x6
+081EE: AE 93 B1             ldw     X, #0x93B1
+081F1: 1F 01                ldw     (1, SP), X
+                        ; :: main.c #161: SD_SCK_HOLD
+081F3: 72 1D 50 0A          bres    0x500A, #6
+081F7: 72 1C 50 0C          bset    0x500C, #6
+                        ; :: main.c #162: ENABLE_SPI2()
+081FB: CD 82 C3             call    0x82C3 {ENABLE_SPI2}
+                        ; :: main.c #164: VS1011_ENABLE_DATA
+081FE: 72 17 50 05          bres    0x5005, #3
+                        ; :: main.c #166: for (length = 0
+08202: 0F 04                clr     (4, SP)
+08204: 0F 03                clr     (3, SP)
+                        _$L71:
+                        ; :: main.c #166: length < sizeof(ballon_snd)
+08206: 1E 03                ldw     X, (3, SP)
+08208: A3 03 44             cpw     X, #0x344
+0820B: 24 1D                jrnc    0x822A {_$L73}
+                        _$L72:
+                        ; :: main.c #168: while ( VS1011_BUSY 
+0820D: 72 0B 50 06 FB       btjf    0x5006, #5, 0x820D {_$L72}
+                        ; :: main.c #168: ; ; :: main.c #169: SPI2_write(*p++)
+08212: 1E 01                ldw     X, (1, SP)
+08214: 1F 05                ldw     (5, SP), X
+08216: 1E 01                ldw     X, (1, SP)
+08218: 5C                   incw    X
+08219: 1F 01                ldw     (1, SP), X
+0821B: 1E 05                ldw     X, (5, SP)
+0821D: F6                   ld      A, (X)
+0821E: 88                   push    A
+0821F: CD 82 D1             call    0x82D1 {SPI2_write}
+08222: 84                   pop     A
+                        ; :: main.c #166: length++
+08223: 1E 03                ldw     X, (3, SP)
+08225: 5C                   incw    X
+08226: 1F 03                ldw     (3, SP), X
+08228: 20 DC                jra     0x8206 {_$L71}
+                        _$L73:
+                        ; :: main.c #172: VS1011_DISABLE_DATA
+0822A: 72 16 50 05          bset    0x5005, #3
+                        ; :: main.c #173: DISABLE_SPI2()
+0822E: CD 82 CC             call    0x82CC {DISABLE_SPI2}
+                        ; :: main.c #174: SD_SCK_UNHOLD
+08231: 72 1D 50 0C          bres    0x500C, #6
+08235: 5B 06                add     SP, #0x6
+08237: 81                   ret
+                        (spi.obj line#4, 69 bytes)
+                        SPI_init::
+                        ; :: spi.c #8: SPI_CONFIG
+08238: 72 1C 50 02          bset    0x5002, #6
+0823C: 72 1C 50 03          bset    0x5003, #6
+08240: 72 1D 50 04          bres    0x5004, #6
+08244: 72 10 50 20          bset    0x5020, #0
+08248: 72 10 50 21          bset    0x5021, #0
+0824C: 72 11 50 22          bres    0x5022, #0
+                        ; :: spi.c #9: SPI_SCK_LO
+08250: 72 11 50 1E          bres    0x501E, #0
+                        ; :: spi.c #11: SD_CS_CFG_DDR
+08254: 72 18 50 02          bset    0x5002, #4
+08258: 72 18 50 03          bset    0x5003, #4
+                        ; :: spi.c #12: SD_DISABLE
+0825C: 72 18 50 00          bset    0x5000, #4
+                        ; :: spi.c #14: SD_SCK_UNHOLD
+08260: 72 1D 50 0C          bres    0x500C, #6
+                        ; :: spi.c #16: VS1011_ICS_CFG_DDR
+08264: 72 12 50 07          bset    0x5007, #1
+08268: 72 12 50 08          bset    0x5008, #1
+                        ; :: spi.c #17: VS1011_DISABLE_INST
+0826C: 72 12 50 05          bset    0x5005, #1
+                        ; :: spi.c #19: VS1011_DCS_CFG_DDR
+08270: 72 16 50 07          bset    0x5007, #3
+08274: 72 16 50 08          bset    0x5008, #3
+                        ; :: spi.c #20: VS1011_DISABLE_DATA
+08278: 72 16 50 05          bset    0x5005, #3
+0827C: 81                   ret
+                        (spi.obj line#25, 34 bytes)
+                        SPI_write::
+0827D: 88                   push    A
+0827E: A6 08                ld      A, #0x8
+08280: 6B 01                ld      (1, SP), A
+                        _$L3:
+                        ; :: spi.c #30: SPI_MOSI_LO
+08282: 72 1D 50 00          bres    0x5000, #6
+                        ; :: spi.c #31: if ( data & 0x80 
+08286: 7B 04                ld      A, (4, SP)
+08288: 2A 05                jrpl    0x828F {_$L7}
+                        ; :: spi.c #33: SPI_MOSI_HI
+0828A: 72 1C 50 00          bset    0x5000, #6
+                        ; :: spi.c #34: asm("nop")
+0828E: 9D                   nop
+                        _$L7:
+                        ; :: spi.c #36: 
+0828F: 72 10 50 1E          bset    0x501E, #0
+                        ; :: spi.c #37: data <<= 1
+08293: 08 04                sll     (4, SP)
+                        ; :: spi.c #38: SPI_SCK_LO
+08295: 72 11 50 1E          bres    0x501E, #0
+                        ; :: spi.c #39: while ( --cnt 
+08299: 0A 01                dec     (1, SP)
+0829B: 26 E5                jrne    0x8282 {_$L3}
+0829D: 84                   pop     A
+0829E: 81                   ret
+                        (spi.obj line#49, 36 bytes)
+                        SPI_read::
+0829F: 89                   pushw   X
+                        ; :: spi.c #45: SPI_MOSI_HI
+082A0: 72 1C 50 00          bset    0x5000, #6
+082A4: A6 08                ld      A, #0x8
+082A6: 6B 01                ld      (1, SP), A
+                        _$L10:
+                        ; :: spi.c #51: SPI_SCK_HI
+082A8: 72 10 50 1E          bset    0x501E, #0
+                        ; :: spi.c #52: data <<= 1
+082AC: 08 02                sll     (2, SP)
+                        ; :: spi.c #53: if ( SPI_MISO_HI 
+082AE: 72 09 50 0B 02       btjf    0x500B, #4, 0x82B5 {_$L14}
+                        ; :: spi.c #54: data++
+082B3: 0C 02                inc     (2, SP)
+                        _$L14:
+                        ; :: spi.c #56: 
+082B5: 72 11 50 1E          bres    0x501E, #0
+                        ; :: spi.c #57: while ( --cnt 
+082B9: 0A 01                dec     (1, SP)
+082BB: 26 EB                jrne    0x82A8 {_$L10}
+                        ; :: spi.c #59: return data
+082BD: 7B 02                ld      A, (2, SP)
+082BF: B7 00                ld      0x0, A
+082C1: 85                   popw    X
+082C2: 81                   ret
+                        (spi.obj line#71, 9 bytes)
+                        ENABLE_SPI2::
+                        ; :: spi.c #66: sbi(PC_DDR, SPI_MISO_PIN)
+082C3: 72 18 50 0C          bset    0x500C, #4
+                        ; :: spi.c #67: sbi(PC_CR1, SPI_MISO_PIN)
+082C7: 72 18 50 0D          bset    0x500D, #4
+082CB: 81                   ret
+                        (spi.obj line#77, 5 bytes)
+                        DISABLE_SPI2::
+                        ; :: spi.c #74: cbi(PC_DDR, SPI_MISO_PIN)
+082CC: 72 19 50 0C          bres    0x500C, #4
+082D0: 81                   ret
+                        (spi.obj line#81, 33 bytes)
+                        SPI2_write::
+082D1: 88                   push    A
+082D2: A6 08                ld      A, #0x8
+082D4: 6B 01                ld      (1, SP), A
+                        _$L19:
+                        ; :: spi.c #84: SPI2_MOSI_LO
+082D6: 72 19 50 0A          bres    0x500A, #4
+                        ; :: spi.c #85: if ( data & 0x80 
+082DA: 7B 04                ld      A, (4, SP)
+082DC: 2A 04                jrpl    0x82E2 {_$L23}
+                        ; :: spi.c #86: SPI2_MOSI_HI
+082DE: 72 18 50 0A          bset    0x500A, #4
+                        _$L23:
+                        ; :: spi.c #88: 
+082E2: 72 10 50 1E          bset    0x501E, #0
+                        ; :: spi.c #89: data <<= 1
+082E6: 08 04                sll     (4, SP)
+                        ; :: spi.c #90: SPI_SCK_LO
+082E8: 72 11 50 1E          bres    0x501E, #0
+                        ; :: spi.c #91: while ( --cnt 
+082EC: 0A 01                dec     (1, SP)
+082EE: 26 E6                jrne    0x82D6 {_$L19}
+082F0: 84                   pop     A
+082F1: 81                   ret
+                        (spi.obj line#103, 23 bytes)
+                        SPI_burst::
+082F2: 88                   push    A
+                        ; :: spi.c #102: #else    SPI_MOSI_HI
+082F3: 72 1C 50 00          bset    0x5000, #6
+082F7: 0F 01                clr     (1, SP)
+                        _$L26:
+                        ; :: spi.c #106: SPI_SCK_HI
+082F9: 72 10 50 1E          bset    0x501E, #0
+                        ; :: spi.c #106: _NOP_
+082FD: 9D                   nop
+                        ; :: spi.c #106: _NOP_
+082FE: 9D                   nop
+                        ; :: spi.c #107: SPI_SCK_LO
+082FF: 72 11 50 1E          bres    0x501E, #0
+                        ; :: spi.c #108: while ( --i 
+08303: 0A 01                dec     (1, SP)
+08305: 26 F2                jrne    0x82F9 {_$L26}
+08307: 84                   pop     A
+08308: 81                   ret
+                        (define.obj line#4, 18 bytes)
+                        delay::
+08309: 52 04                sub     SP, #0x4
+0830B: BE 11                ldw     X, 0x11 {Timer0}
+0830D: 1F 01                ldw     (1, SP), X
+                        _$L2:
+                        ; :: define.c #9: while ( TMR0_Elapsed(t) == 0 
+0830F: BE 11                ldw     X, 0x11 {Timer0}
+08311: 72 F0 01             subw    X, (1, SP)
+08314: 1F 03                ldw     (3, SP), X
+08316: 27 F7                jreq    0x830F {_$L2}
+                        ; :: define.c #9: 
+08318: 5B 04                add     SP, #0x4
+0831A: 81                   ret
+                        (define.obj line#13, 68 bytes)
+                        MEMCMP_ROM::
+0831B: 89                   pushw   X
+                        _$L6:
+                        ; :: define.c #15: while ( len-- 
+0831C: 7B 09                ld      A, (9, SP)
+0831E: 0A 09                dec     (9, SP)
+08320: 4D                   tnz     A
+08321: 27 36                jreq    0x8359 {_$L8}
+08323: 1E 05                ldw     X, (5, SP)
+08325: F6                   ld      A, (X)
+08326: 6B 01                ld      (1, SP), A
+08328: 1E 05                ldw     X, (5, SP)
+0832A: 5C                   incw    X
+0832B: 1F 05                ldw     (5, SP), X
+0832D: 1E 07                ldw     X, (7, SP)
+0832F: F6                   ld      A, (X)
+08330: 6B 02                ld      (2, SP), A
+08332: 1E 07                ldw     X, (7, SP)
+08334: 5C                   incw    X
+08335: 1F 07                ldw     (7, SP), X
+                        ; :: define.c #20: if ( c1 >= 'a' 
+08337: 7B 01                ld      A, (1, SP)
+08339: A0 61                sub     A, #0x61
+0833B: 2F 06                jrslt   0x8343 {_$L10}
+                        ; :: define.c #20: c1 -= 'a' - 'A'
+0833D: 7B 01                ld      A, (1, SP)
+0833F: AB E0                add     A, #0xE0
+08341: 6B 01                ld      (1, SP), A
+                        _$L10:
+                        ; :: define.c #21: ( c2 >= 'a' 
+08343: 7B 02                ld      A, (2, SP)
+08345: A0 61                sub     A, #0x61
+08347: 2F 06                jrslt   0x834F {_$L13}
+                        ; :: define.c #21: c2 -= 'a' - 'A'
+08349: 7B 02                ld      A, (2, SP)
+0834B: AB E0                add     A, #0xE0
+0834D: 6B 02                ld      (2, SP), A
+                        _$L13:
+                        ; :: define.c #23: ( c1 != c2 
+0834F: 7B 01                ld      A, (1, SP)
+08351: 11 02                cp      A, (2, SP)
+                        _$L18:
+08353: 27 C7                jreq    0x831C {_$L6}
+                        _$L19:
+                        ; :: define.c #24: return 0
+08355: 3F 00                clr     0x0
+08357: 20 04                jra     0x835D {_$L5}
+                        _$L8:
+                        ; :: define.c #27: return 1
+08359: 35 01 00 00          mov     0x0, #0x1
+                        _$L5:
+0835D: 85                   popw    X
+0835E: 81                   ret
+                        (fat.obj line#16, 56 bytes)
+                        endian32:
+0835F: 88                   push    A
+                        ; :: fat.c #23: c = *np
+08360: 1E 04                ldw     X, (4, SP)
+08362: F6                   ld      A, (X)
+08363: 6B 01                ld      (1, SP), A
+                        ; :: fat.c #23: *np = np[3]
+08365: 1E 04                ldw     X, (4, SP)
+08367: 16 04                ldw     Y, (4, SP)
+08369: 90 E6 03             ld      A, (3, Y)
+0836C: F7                   ld      (X), A
+                        ; :: fat.c #23: np[3] = c
+0836D: 1E 04                ldw     X, (4, SP)
+0836F: 7B 01                ld      A, (1, SP)
+08371: E7 03                ld      (3, X), A
+                        ; :: fat.c #24: c = np[1]
+08373: 1E 04                ldw     X, (4, SP)
+08375: E6 01                ld      A, (1, X)
+08377: 6B 01                ld      (1, SP), A
+                        ; :: fat.c #24: np[1] = np[2]
+08379: 1E 04                ldw     X, (4, SP)
+0837B: 16 04                ldw     Y, (4, SP)
+0837D: 90 E6 02             ld      A, (2, Y)
+08380: E7 01                ld      (1, X), A
+                        ; :: fat.c #24: np[2] = c
+08382: 1E 04                ldw     X, (4, SP)
+08384: 7B 01                ld      A, (1, SP)
+08386: E7 02                ld      (2, X), A
+                        ; :: fat.c #25: return *((long*)np)
+08388: 1E 04                ldw     X, (4, SP)
+0838A: 90 93                ldw     Y, X
+0838C: 90 EE 02             ldw     Y, (2, Y)
+0838F: 90 BF 02             ldw     0x2, Y
+08392: FE                   ldw     X, (X)
+08393: BF 00                ldw     0x0, X
+08395: 84                   pop     A
+08396: 81                   ret
+                        (fat.obj line#33, 30 bytes)
+                        endian16:
+08397: 52 04                sub     SP, #0x4
+08399: 7B 07                ld      A, (7, SP)
+0839B: 6B 02                ld      (2, SP), A
+0839D: 4F                   clr     A
+0839E: 6B 01                ld      (1, SP), A
+                        ; :: fat.c #31: return num | (n << 8)
+083A0: 0F 04                clr     (4, SP)
+083A2: 7B 08                ld      A, (8, SP)
+083A4: 6B 03                ld      (3, SP), A
+083A6: 7B 02                ld      A, (2, SP)
+083A8: 1A 04                or      A, (4, SP)
+083AA: B7 01                ld      0x1, A
+083AC: 7B 01                ld      A, (1, SP)
+083AE: 1A 03                or      A, (3, SP)
+083B0: B7 00                ld      0x0, A
+083B2: 5B 04                add     SP, #0x4
+083B4: 81                   ret
+                        (fat.obj line#39, 67 bytes)
+                        fatClusterToSector::
+083B5: 52 08                sub     SP, #0x8
+083B7: 1E 0D                ldw     X, (13, SP)
+083B9: 1D 00 02             subw    X, #0x2
+083BC: 1F 07                ldw     (7, SP), X
+083BE: 1E 0B                ldw     X, (11, SP)
+083C0: 24 01                jrnc    0x83C3
+083C2: 5A                   decw    X
+083C3: 1D 00 00             subw    X, #0x0
+083C6: 1F 05                ldw     (5, SP), X
+083C8: 3B 00 48             push    0x48
+083CB: 4B 00                push    #0x0
+083CD: 4B 00                push    #0x0
+083CF: 4B 00                push    #0x0
+083D1: 96                   ldw     X, SP
+083D2: 1C 00 09             addw    X, #0x9
+083D5: CD 93 35             call    0x9335 {_mul32Ptr}
+083D8: 5B 04                add     SP, #0x4
+083DA: CE 00 4F             ldw     X, 0x4F
+083DD: 72 FB 07             addw    X, (7, SP)
+083E0: 1F 03                ldw     (3, SP), X
+083E2: CE 00 4D             ldw     X, 0x4D
+083E5: 24 01                jrnc    0x83E8
+083E7: 5C                   incw    X
+083E8: 72 FB 05             addw    X, (5, SP)
+083EB: 1F 01                ldw     (1, SP), X
+                        ; :: fat.c #40: return sector
+083ED: 1E 03                ldw     X, (3, SP)
+083EF: BF 02                ldw     0x2, X
+083F1: 1E 01                ldw     X, (1, SP)
+083F3: BF 00                ldw     0x0, X
+083F5: 5B 08                add     SP, #0x8
+083F7: 81                   ret
+                        (fat.obj line#47, 142 bytes)
+                        fatNextCluster::
+083F8: 52 0C                sub     SP, #0xC
+083FA: 7B 12                ld      A, (18, SP)
+083FC: 6B 04                ld      (4, SP), A
+083FE: 7B 11                ld      A, (17, SP)
+08400: 6B 03                ld      (3, SP), A
+08402: 7B 10                ld      A, (16, SP)
+08404: 6B 02                ld      (2, SP), A
+08406: 7B 0F                ld      A, (15, SP)
+08408: 6B 01                ld      (1, SP), A
+0840A: 08 04                sll     (4, SP)
+0840C: 09 03                rlc     (3, SP)
+0840E: 09 02                rlc     (2, SP)
+08410: 09 01                rlc     (1, SP)
+                        ; :: fat.c #49: if ( fat_info.fatType != FAT16 
+08412: C6 00 47             ld      A, 0x47 {fat_info}
+08415: 27 08                jreq    0x841F {_$L6}
+                        ; :: fat.c #50: fatOffset <<= 1
+08417: 08 04                sll     (4, SP)
+08419: 09 03                rlc     (3, SP)
+0841B: 09 02                rlc     (2, SP)
+0841D: 09 01                rlc     (1, SP)
+                        _$L6:
+0841F: 7B 03                ld      A, (3, SP)
+08421: 6B 0C                ld      (12, SP), A
+08423: 7B 02                ld      A, (2, SP)
+08425: 6B 0B                ld      (11, SP), A
+08427: 7B 01                ld      A, (1, SP)
+08429: 6B 0A                ld      (10, SP), A
+0842B: 4F                   clr     A
+0842C: 6B 09                ld      (9, SP), A
+0842E: 04 0A                srl     (10, SP)
+08430: 06 0B                rrc     (11, SP)
+08432: 06 0C                rrc     (12, SP)
+08434: CE 00 4B             ldw     X, 0x4B
+08437: 72 FB 0B             addw    X, (11, SP)
+0843A: 1F 07                ldw     (7, SP), X
+0843C: CE 00 49             ldw     X, 0x49
+0843F: 24 01                jrnc    0x8442
+08441: 5C                   incw    X
+08442: 72 FB 09             addw    X, (9, SP)
+08445: 1F 05                ldw     (5, SP), X
+                        ; :: fat.c #54: MMC_ReadSegOffset(sector, fatOffset & 0x1ff)
+08447: 52 06                sub     SP, #0x6
+08449: 1E 0D                ldw     X, (13, SP)
+0844B: 1F 03                ldw     (3, SP), X
+0844D: 1E 0B                ldw     X, (11, SP)
+0844F: 1F 01                ldw     (1, SP), X
+08451: 7B 0A                ld      A, (10, SP)
+08453: 6B 10                ld      (16, SP), A
+08455: 7B 09                ld      A, (9, SP)
+08457: A4 01                and     A, #0x1
+08459: 6B 0F                ld      (15, SP), A
+0845B: 1E 0F                ldw     X, (15, SP)
+0845D: 1F 05                ldw     (5, SP), X
+0845F: CD 91 52             call    0x9152 {MMC_ReadSegOffset}
+08462: 5B 06                add     SP, #0x6
+                        ; :: fat.c #56: if ( fat_info.fatType == FAT16 
+08464: C6 00 47             ld      A, 0x47 {fat_info}
+08467: 26 12                jrne    0x847B {_$L9}
+                        ; :: fat.c #57: return endian16(*((unsigned int *)BUFFER))
+08469: CE 00 13             ldw     X, 0x13 {MMC_Buf}
+0846C: 89                   pushw   X
+0846D: CD 83 97             call    0x8397 {endian16}
+08470: 85                   popw    X
+08471: BE 00                ldw     X, 0x0
+08473: BF 02                ldw     0x2, X
+08475: 3F 01                clr     0x1
+08477: 3F 00                clr     0x0
+08479: 20 08                jra     0x8483 {_$L10}
+                        _$L9:
+                        ; :: fat.c #59: else	    return endian32((unsigned long *)BUFFER)
+0847B: AE 00 13             ldw     X, #0x13
+0847E: 89                   pushw   X
+0847F: CD 83 5F             call    0x835F {endian32}
+08482: 85                   popw    X
+                        _$L10:
+08483: 5B 0C                add     SP, #0xC
+08485: 81                   ret
+                        (fat.obj line#76, 502 bytes)
+                        fatInit::
+08486: 52 0C                sub     SP, #0xC
+                        ; :: fat.c #66: if ( MMC_Init() != MMC_OK || !CheckSignature(0) 
+08488: CD 90 47             call    0x9047 {MMC_Init}
+0848B: B6 00                ld      A, 0x0
+0848D: 6B 09                ld      (9, SP), A
+0848F: 26 0D                jrne    0x849E {_$L12}
+08491: 5F                   clrw    X
+08492: 89                   pushw   X
+08493: 5F                   clrw    X
+08494: 89                   pushw   X
+08495: CD 8C 2C             call    0x8C2C {CheckSignature}
+08498: 5B 04                add     SP, #0x4
+0849A: B6 00                ld      A, 0x0
+0849C: 26 05                jrne    0x84A3 {_$L13}
+                        _$L12:
+                        ; :: fat.c #67: return 0
+0849E: 3F 00                clr     0x0
+084A0: CC 86 79             jp      0x8679 {_$L11}
+                        _$L13:
+                        ; :: fat.c #69: .fatType    = FAT16
+084A3: 72 5F 00 47          clr     0x47 {fat_info}
+084A7: 0F 04                clr     (4, SP)
+084A9: 0F 03                clr     (3, SP)
+084AB: 0F 02                clr     (2, SP)
+084AD: 0F 01                clr     (1, SP)
+084AF: AE 00 13             ldw     X, #0x13
+084B2: 1F 05                ldw     (5, SP), X
+                        ; :: fat.c #74: if ( MMC_ReadSegOffset(0, 446) != MMC_OK 
+084B4: 52 06                sub     SP, #0x6
+084B6: 0F 04                clr     (4, SP)
+084B8: 0F 03                clr     (3, SP)
+084BA: 0F 02                clr     (2, SP)
+084BC: 0F 01                clr     (1, SP)
+084BE: AE 01 BE             ldw     X, #0x1BE
+084C1: 1F 05                ldw     (5, SP), X
+084C3: CD 91 52             call    0x9152 {MMC_ReadSegOffset}
+084C6: 5B 06                add     SP, #0x6
+084C8: B6 00                ld      A, 0x0
+084CA: 27 05                jreq    0x84D1 {_$L17}
+                        ; :: fat.c #75: return 0
+084CC: 3F 00                clr     0x0
+084CE: CC 86 79             jp      0x8679 {_$L11}
+                        _$L17:
+                        ; :: fat.c #77: ( (PartInfo->isActive & 0x7f) == 0 
+084D1: 1E 05                ldw     X, (5, SP)
+084D3: F6                   ld      A, (X)
+084D4: A4 7F                and     A, #0x7F
+084D6: 6B 09                ld      (9, SP), A
+084D8: 26 55                jrne    0x852F {_$L22}
+                        ; :: fat.c #79: bootSector = endian32(&PartInfo->startLBA)
+084DA: 1E 05                ldw     X, (5, SP)
+084DC: 1C 00 08             addw    X, #0x8
+084DF: 1F 09                ldw     (9, SP), X
+084E1: 89                   pushw   X
+084E2: CD 83 5F             call    0x835F {endian32}
+084E5: 85                   popw    X
+084E6: BE 02                ldw     X, 0x2
+084E8: 1F 03                ldw     (3, SP), X
+084EA: BE 00                ldw     X, 0x0
+084EC: 1F 01                ldw     (1, SP), X
+                        ; :: fat.c #82: switch ( PartInfo->partitionType )	
+084EE: 1E 05                ldw     X, (5, SP)
+084F0: E6 04                ld      A, (4, X)
+                        ; :: fat.c #83: case PART_TYPE_DOSFAT16
+084F2: A1 04                cp      A, #0x4
+084F4: 27 12                jreq    0x8508 {_$L23}
+                        ; :: fat.c #84: case PART_TYPE_FAT16
+084F6: A1 06                cp      A, #0x6
+084F8: 27 0E                jreq    0x8508 {_$L23}
+                        ; :: fat.c #85: case PART_TYPE_FAT16LBA
+084FA: A1 0E                cp      A, #0xE
+084FC: 27 0A                jreq    0x8508 {_$L23}
+                        ; :: fat.c #89: case PART_TYPE_FAT32LBA
+084FE: A1 0C                cp      A, #0xC
+08500: 27 16                jreq    0x8518 {_$L26}
+                        ; :: fat.c #90: case PART_TYPE_FAT32
+08502: A1 0B                cp      A, #0xB
+08504: 27 12                jreq    0x8518 {_$L26}
+08506: 20 22                jra     0x852A {_$L28}
+                        _$L23:
+                        ; :: fat.c #86: MAX_CLUSTER = 0x0000fff8
+08508: AE FF F8             ldw     X, #0xFFF8
+0850B: CF 00 59             ldw     0x59, X
+0850E: 72 5F 00 58          clr     0x58
+08512: 72 5F 00 57          clr     0x57 {MAX_CLUSTER}
+                        ; :: fat.c #87: break
+08516: 20 17                jra     0x852F {_$L22}
+                        _$L26:
+                        ; :: fat.c #91: MAX_CLUSTER = 0x0ffffff8
+08518: AE FF F8             ldw     X, #0xFFF8
+0851B: CF 00 59             ldw     0x59, X
+0851E: AE 0F FF             ldw     X, #0xFFF
+08521: CF 00 57             ldw     0x57 {MAX_CLUSTER}, X
+                        ; :: fat.c #92: fat_info.fatType = FAT32
+08524: 35 01 00 47          mov     0x47 {fat_info}, #0x1
+                        ; :: fat.c #93: break
+08528: 20 05                jra     0x852F {_$L22}
+                        _$L28:
+                        ; :: fat.c #96: return 0
+0852A: 3F 00                clr     0x0
+0852C: CC 86 79             jp      0x8679 {_$L11}
+                        _$L22:
+                        ; :: fat.c #100: ( !CheckSignature(bootSector) 
+0852F: 1E 03                ldw     X, (3, SP)
+08531: 89                   pushw   X
+08532: 1E 03                ldw     X, (3, SP)
+08534: 89                   pushw   X
+08535: CD 8C 2C             call    0x8C2C {CheckSignature}
+08538: 5B 04                add     SP, #0x4
+0853A: B6 00                ld      A, 0x0
+0853C: 26 05                jrne    0x8543 {_$L30}
+                        ; :: fat.c #101: return 0
+0853E: 3F 00                clr     0x0
+08540: CC 86 79             jp      0x8679 {_$L11}
+                        _$L30:
+                        ; :: fat.c #104: ( MMC_ReadSegOffsetLength(bootSector, 11, SEGMENT_SIZE+6) != MMC_OK 
+08543: 52 07                sub     SP, #0x7
+08545: 1E 0A                ldw     X, (10, SP)
+08547: 1F 03                ldw     (3, SP), X
+08549: 1E 08                ldw     X, (8, SP)
+0854B: 1F 01                ldw     (1, SP), X
+0854D: AE 00 0B             ldw     X, #0xB
+08550: 1F 05                ldw     (5, SP), X
+08552: A6 26                ld      A, #0x26
+08554: 6B 07                ld      (7, SP), A
+08556: CD 91 D4             call    0x91D4 {MMC_ReadSegOffsetLength}
+08559: 5B 07                add     SP, #0x7
+0855B: B6 00                ld      A, 0x0
+0855D: 27 05                jreq    0x8564 {_$L33}
+                        ; :: fat.c #105: return 0
+0855F: 3F 00                clr     0x0
+08561: CC 86 79             jp      0x8679 {_$L11}
+                        _$L33:
+08564: AE 00 13             ldw     X, #0x13
+08567: 1F 07                ldw     (7, SP), X
+                        ; :: fat.c #109: if ( endian16(bp->bytesPerSector) != SECTOR_SIZE || bp->numberOfFATs != 2 
+08569: 1E 07                ldw     X, (7, SP)
+0856B: FE                   ldw     X, (X)
+0856C: 89                   pushw   X
+0856D: CD 83 97             call    0x8397 {endian16}
+08570: 85                   popw    X
+08571: BE 00                ldw     X, 0x0
+08573: A3 02 00             cpw     X, #0x200
+                        _$L192:
+08576: 26 08                jrne    0x8580 {_$L195}
+                        _$L193:
+08578: 1E 07                ldw     X, (7, SP)
+0857A: E6 05                ld      A, (5, X)
+0857C: A1 02                cp      A, #0x2
+                        _$L194:
+0857E: 27 05                jreq    0x8585 {_$L36}
+                        _$L195:
+                        _$L35:
+                        ; :: fat.c #111: return 0
+08580: 3F 00                clr     0x0
+08582: CC 86 79             jp      0x8679 {_$L11}
+                        _$L36:
+                        ; :: fat.c #114: .sectorsPerCluster = bp->sectorsPerCluster
+08585: 1E 07                ldw     X, (7, SP)
+08587: E6 02                ld      A, (2, X)
+08589: C7 00 48             ld      0x48, A
+                        ; :: fat.c #115: fat_info.firstFATSector    = bootSector + endian16(bp->reservedSectors)
+0858C: 1E 07                ldw     X, (7, SP)
+0858E: EE 03                ldw     X, (3, X)
+08590: 89                   pushw   X
+08591: CD 83 97             call    0x8397 {endian16}
+08594: 85                   popw    X
+08595: 1E 03                ldw     X, (3, SP)
+08597: 72 BB 00 00          addw    X, 0x0
+0859B: CF 00 4B             ldw     0x4B, X
+0859E: 7B 02                ld      A, (2, SP)
+085A0: A9 00                adc     A, #0x0
+085A2: C7 00 4A             ld      0x4A, A
+085A5: 7B 01                ld      A, (1, SP)
+085A7: A9 00                adc     A, #0x0
+085A9: C7 00 49             ld      0x49, A
+                        ; :: fat.c #118: switch ( fat_info.fatType )
+085AC: C6 00 47             ld      A, 0x47 {fat_info}
+                        ; :: fat.c #119: case FAT16
+085AF: 4D                   tnz     A
+085B0: 27 07                jreq    0x85B9 {_$L40}
+                        ; :: fat.c #125: case FAT32
+085B2: A1 01                cp      A, #0x1
+085B4: 27 78                jreq    0x862E {_$L41}
+085B6: CC 86 75             jp      0x8675 {_$L39}
+                        _$L40:
+                        ; :: fat.c #120: fat_info.FAT.fat16.rootDirEntries= endian16(bp->rootDirEntries)
+085B9: 1E 07                ldw     X, (7, SP)
+085BB: 1C 00 06             addw    X, #0x6
+085BE: 1F 09                ldw     (9, SP), X
+085C0: 1E 07                ldw     X, (7, SP)
+085C2: EE 06                ldw     X, (6, X)
+085C4: 89                   pushw   X
+085C5: CD 83 97             call    0x8397 {endian16}
+085C8: 85                   popw    X
+085C9: BE 00                ldw     X, 0x0
+085CB: CF 00 55             ldw     0x55, X
+                        ; :: fat.c #121: fat_info.FAT.fat16.rootDirSector = fat_info.firstFATSector + endian16(bp->sectorsPerFAT16) * 2
+085CE: 1E 07                ldw     X, (7, SP)
+085D0: EE 0B                ldw     X, (11, X)
+085D2: 89                   pushw   X
+085D3: CD 83 97             call    0x8397 {endian16}
+085D6: 85                   popw    X
+085D7: B6 01                ld      A, 0x1
+085D9: 6B 0B                ld      (11, SP), A
+085DB: B6 00                ld      A, 0x0
+085DD: 6B 0A                ld      (10, SP), A
+085DF: 0F 09                clr     (9, SP)
+085E1: 08 0B                sll     (11, SP)
+085E3: 09 0A                rlc     (10, SP)
+085E5: 09 09                rlc     (9, SP)
+085E7: CE 00 4B             ldw     X, 0x4B
+085EA: 72 FB 0A             addw    X, (10, SP)
+085ED: CF 00 53             ldw     0x53, X
+085F0: C6 00 4A             ld      A, 0x4A
+085F3: 19 09                adc     A, (9, SP)
+085F5: C7 00 52             ld      0x52, A
+085F8: C6 00 49             ld      A, 0x49
+085FB: A9 00                adc     A, #0x0
+085FD: C7 00 51             ld      0x51, A
+                        ; :: fat.c #122: fat_info.firstDataSector         = fat_info.FAT.fat16.rootDirSector + (fat_info.FAT.fat16.rootDirEntries >> 4)
+08600: C6 00 56             ld      A, 0x56
+08603: 6B 0A                ld      (10, SP), A
+08605: C6 00 55             ld      A, 0x55
+08608: 6B 09                ld      (9, SP), A
+0860A: A6 04                ld      A, #0x4
+                        _$L197:
+0860C: 04 09                srl     (9, SP)
+0860E: 06 0A                rrc     (10, SP)
+08610: 4A                   dec     A
+08611: 26 F9                jrne    0x860C {_$L197}
+08613: CE 00 53             ldw     X, 0x53
+08616: 72 FB 09             addw    X, (9, SP)
+08619: CF 00 4F             ldw     0x4F, X
+0861C: C6 00 52             ld      A, 0x52
+0861F: A9 00                adc     A, #0x0
+08621: C7 00 4E             ld      0x4E, A
+08624: C6 00 51             ld      A, 0x51
+08627: A9 00                adc     A, #0x0
+08629: C7 00 4D             ld      0x4D, A
+                        ; :: fat.c #123: break
+0862C: 20 47                jra     0x8675 {_$L39}
+                        _$L41:
+                        ; :: fat.c #126: fat_info.FAT.fat32.rootDirCluster= endian32(&bp->rootClusterFAT32)
+0862E: 1E 07                ldw     X, (7, SP)
+08630: 1C 00 21             addw    X, #0x21
+08633: 1F 09                ldw     (9, SP), X
+08635: 89                   pushw   X
+08636: CD 83 5F             call    0x835F {endian32}
+08639: 85                   popw    X
+0863A: BE 02                ldw     X, 0x2
+0863C: CF 00 53             ldw     0x53, X
+0863F: BE 00                ldw     X, 0x0
+08641: CF 00 51             ldw     0x51, X
+                        ; :: fat.c #127: fat_info.firstDataSector         = fat_info.firstFATSector + endian32(&bp->sectorsPerFAT32) * 2
+08644: 1E 07                ldw     X, (7, SP)
+08646: 1C 00 19             addw    X, #0x19
+08649: 1F 09                ldw     (9, SP), X
+0864B: 89                   pushw   X
+0864C: CD 83 5F             call    0x835F {endian32}
+0864F: 85                   popw    X
+08650: 38 03                sll     0x3
+08652: 39 02                rlc     0x2
+08654: 39 01                rlc     0x1
+08656: 39 00                rlc     0x0
+08658: BE 02                ldw     X, 0x2
+0865A: 1F 0B                ldw     (11, SP), X
+0865C: BE 00                ldw     X, 0x0
+0865E: 1F 09                ldw     (9, SP), X
+08660: CE 00 4B             ldw     X, 0x4B
+08663: 72 FB 0B             addw    X, (11, SP)
+08666: CF 00 4F             ldw     0x4F, X
+08669: CE 00 49             ldw     X, 0x49
+0866C: 24 01                jrnc    0x866F
+0866E: 5C                   incw    X
+0866F: 72 FB 09             addw    X, (9, SP)
+08672: CF 00 4D             ldw     0x4D, X
+                        _$L39:
+                        ; :: fat.c #130: return 1
+08675: 35 01 00 00          mov     0x0, #0x1
+                        _$L11:
+08679: 5B 0C                add     SP, #0xC
+0867B: 81                   ret
+                        (fat.obj line#219, 94 bytes)
+                        FAT_EntryType::
+0867C: 89                   pushw   X
+0867D: C6 00 13             ld      A, 0x13 {MMC_Buf}
+08680: 6B 01                ld      (1, SP), A
+                        ; :: fat.c #140: if ( c == 0xe5 || c == 0x00 || c == '.' 
+08682: 7B 01                ld      A, (1, SP)
+08684: A1 E5                cp      A, #0xE5
+                        _$L199:
+08686: 27 0A                jreq    0x8692 {_$L202}
+                        _$L200:
+08688: 7B 01                ld      A, (1, SP)
+0868A: 27 06                jreq    0x8692 {_$L202}
+0868C: 7B 01                ld      A, (1, SP)
+0868E: A1 2E                cp      A, #0x2E
+                        _$L201:
+08690: 26 06                jrne    0x8698 {_$L44}
+                        _$L202:
+                        _$L43:
+                        ; :: fat.c #141: return NULL_ENTRY
+08692: 35 02 00 00          mov     0x0, #0x2
+08696: 20 40                jra     0x86D8 {_$L42}
+                        _$L44:
+08698: C6 00 1E             ld      A, 0x1E
+0869B: A4 3F                and     A, #0x3F
+0869D: 6B 02                ld      (2, SP), A
+                        ; :: fat.c #145: if ( MEMCMP_ROM(MMC_Buf.dir.ext, "MP3", 3) && (attr == 0x01 || attr == 0x20) 
+0869F: 52 05                sub     SP, #0x5
+086A1: AE 00 1B             ldw     X, #0x1B
+086A4: 1F 01                ldw     (1, SP), X
+086A6: AE 93 AD             ldw     X, #0x93AD
+086A9: 1F 03                ldw     (3, SP), X
+086AB: A6 03                ld      A, #0x3
+086AD: 6B 05                ld      (5, SP), A
+086AF: CD 83 1B             call    0x831B {MEMCMP_ROM}
+086B2: 5B 05                add     SP, #0x5
+086B4: B6 00                ld      A, 0x0
+086B6: 27 10                jreq    0x86C8 {_$L49}
+086B8: 7B 02                ld      A, (2, SP)
+086BA: A1 01                cp      A, #0x1
+                        _$L203:
+086BC: 27 06                jreq    0x86C4 {_$L206}
+                        _$L204:
+086BE: 7B 02                ld      A, (2, SP)
+086C0: A1 20                cp      A, #0x20
+                        _$L205:
+086C2: 26 04                jrne    0x86C8 {_$L49}
+                        _$L206:
+                        _$L48:
+                        ; :: fat.c #146: return MP3_FILE
+086C4: 3F 00                clr     0x0
+086C6: 20 10                jra     0x86D8 {_$L42}
+                        _$L49:
+                        ; :: fat.c #148: ( attr & 0x10 
+086C8: 7B 02                ld      A, (2, SP)
+086CA: A4 10                and     A, #0x10
+086CC: 27 06                jreq    0x86D4 {_$L54}
+                        ; :: fat.c #149: return SUB_DIR
+086CE: 35 01 00 00          mov     0x0, #0x1
+086D2: 20 04                jra     0x86D8 {_$L42}
+                        _$L54:
+                        ; :: fat.c #151: UNKNOWN_ENTRY
+086D4: 35 03 00 00          mov     0x0, #0x3
+                        _$L42:
+086D8: 85                   popw    X
+086D9: 81                   ret
+                        (fat.obj line#267, 216 bytes)
+                        FILE_searchMP3Files::
+086DA: 52 0B                sub     SP, #0xB
+086DC: 0F 02                clr     (2, SP)
+086DE: 0F 01                clr     (1, SP)
+                        ; :: fat.c #158: if ( fat_info.fatType == FAT16 
+086E0: C6 00 47             ld      A, 0x47 {fat_info}
+086E3: 27 03                jreq    0x86E8
+086E5: CC 87 90             jp      0x8790 {_$L58}
+086E8: CE 00 53             ldw     X, 0x53
+086EB: 1F 05                ldw     (5, SP), X
+086ED: CE 00 51             ldw     X, 0x51
+086F0: 1F 03                ldw     (3, SP), X
+086F2: 0F 07                clr     (7, SP)
+086F4: CE 00 55             ldw     X, 0x55
+086F7: 1F 08                ldw     (8, SP), X
+                        _$L60:
+                        ; :: fat.c #164: while ( dir_cnt-- 
+086F9: 1E 08                ldw     X, (8, SP)
+086FB: 5A                   decw    X
+086FC: 1F 08                ldw     (8, SP), X
+086FE: 5C                   incw    X
+086FF: 26 03                jrne    0x8704
+08701: CC 87 AB             jp      0x87AB {_$L59}
+                        ; :: fat.c #166: if ( MMC_ReadSegment (sector, segment) != MMC_OK 
+08704: 52 05                sub     SP, #0x5
+08706: 1E 0A                ldw     X, (10, SP)
+08708: 1F 03                ldw     (3, SP), X
+0870A: 1E 08                ldw     X, (8, SP)
+0870C: 1F 01                ldw     (1, SP), X
+0870E: 7B 0C                ld      A, (12, SP)
+08710: 6B 05                ld      (5, SP), A
+08712: CD 90 92             call    0x9092 {MMC_ReadSegment}
+08715: 5B 05                add     SP, #0x5
+08717: B6 00                ld      A, 0x0
+08719: 27 07                jreq    0x8722 {_$L64}
+                        ; :: fat.c #167: return cnt
+0871B: 1E 01                ldw     X, (1, SP)
+0871D: BF 00                ldw     0x0, X
+0871F: CC 87 AF             jp      0x87AF {_$L56}
+                        _$L64:
+                        ; :: fat.c #169: ++
+08722: 0C 07                inc     (7, SP)
+                        ; :: fat.c #172: switch ( FAT_EntryType() )		
+08724: CD 86 7C             call    0x867C {FAT_EntryType}
+08727: B6 00                ld      A, 0x0
+                        ; :: fat.c #173: case MP3_FILE
+08729: 4D                   tnz     A
+0872A: 27 06                jreq    0x8732 {_$L67}
+                        ; :: fat.c #177: case SUB_DIR
+0872C: A1 01                cp      A, #0x1
+0872E: 27 09                jreq    0x8739 {_$L68}
+08730: 20 42                jra     0x8774 {_$L66}
+                        _$L67:
+                        ; :: fat.c #174: cnt++
+08732: 1E 01                ldw     X, (1, SP)
+08734: 5C                   incw    X
+08735: 1F 01                ldw     (1, SP), X
+                        ; :: fat.c #175: break
+08737: 20 3B                jra     0x8774 {_$L66}
+                        _$L68:
+                        ; :: fat.c #178: MMC_flushSector (segment)
+08739: 7B 07                ld      A, (7, SP)
+0873B: 88                   push    A
+0873C: CD 92 AC             call    0x92AC {MMC_flushSector}
+0873F: 84                   pop     A
+                        ; :: fat.c #179: FAT_searchMP3FilesDir (endian16(MMC_Buf.dir.startCluster), 0, &cnt)
+08740: 52 07                sub     SP, #0x7
+08742: CE 00 2D             ldw     X, 0x2D
+08745: 89                   pushw   X
+08746: CD 83 97             call    0x8397 {endian16}
+08749: 85                   popw    X
+0874A: BE 00                ldw     X, 0x0
+0874C: 1F 11                ldw     (17, SP), X
+0874E: 1F 03                ldw     (3, SP), X
+08750: 0F 02                clr     (2, SP)
+08752: 0F 01                clr     (1, SP)
+08754: 0F 05                clr     (5, SP)
+08756: 96                   ldw     X, SP
+08757: 1C 00 08             addw    X, #0x8
+0875A: 1F 06                ldw     (6, SP), X
+0875C: CD 87 B2             call    0x87B2 {FAT_searchMP3FilesDir}
+0875F: 5B 07                add     SP, #0x7
+                        ; :: fat.c #180: MMC_SkipSegment (sector, segment)
+08761: 52 05                sub     SP, #0x5
+08763: 1E 0A                ldw     X, (10, SP)
+08765: 1F 03                ldw     (3, SP), X
+08767: 1E 08                ldw     X, (8, SP)
+08769: 1F 01                ldw     (1, SP), X
+0876B: 7B 0C                ld      A, (12, SP)
+0876D: 6B 05                ld      (5, SP), A
+0876F: CD 90 FC             call    0x90FC {MMC_SkipSegment}
+08772: 5B 05                add     SP, #0x5
+                        ; :: fat.c #181: break
+                        _$L66:
+                        ; :: fat.c #184: if ( segment >= (SECTOR_SIZE/SEGMENT_SIZE) 
+08774: 7B 07                ld      A, (7, SP)
+08776: A0 10                sub     A, #0x10
+08778: 24 03                jrnc    0x877D
+0877A: CC 86 F9             jp      0x86F9 {_$L60}
+                        ; :: fat.c #186: sector++
+0877D: 1E 05                ldw     X, (5, SP)
+0877F: 1C 00 01             addw    X, #0x1
+08782: 1F 05                ldw     (5, SP), X
+08784: 1E 03                ldw     X, (3, SP)
+08786: 24 01                jrnc    0x8789
+08788: 5C                   incw    X
+08789: 1F 03                ldw     (3, SP), X
+                        ; :: fat.c #187: segment = 0
+0878B: 0F 07                clr     (7, SP)
+0878D: CC 86 F9             jp      0x86F9 {_$L60}
+                        _$L58:
+                        ; :: fat.c #192: else		FAT_searchMP3FilesDir (fat_info.FAT.fat32.rootDirCluster, 1, &cnt)
+08790: 52 07                sub     SP, #0x7
+08792: CE 00 53             ldw     X, 0x53
+08795: 1F 03                ldw     (3, SP), X
+08797: CE 00 51             ldw     X, 0x51
+0879A: 1F 01                ldw     (1, SP), X
+0879C: A6 01                ld      A, #0x1
+0879E: 6B 05                ld      (5, SP), A
+087A0: 96                   ldw     X, SP
+087A1: 1C 00 08             addw    X, #0x8
+087A4: 1F 06                ldw     (6, SP), X
+087A6: CD 87 B2             call    0x87B2 {FAT_searchMP3FilesDir}
+087A9: 5B 07                add     SP, #0x7
+                        _$L59:
+                        ; :: fat.c #194: return cnt
+087AB: 1E 01                ldw     X, (1, SP)
+087AD: BF 00                ldw     0x0, X
+                        _$L56:
+087AF: 5B 0B                add     SP, #0xB
+087B1: 81                   ret
+                        (fat.obj line#333, 350 bytes)
+                        FAT_searchMP3FilesDir:
+087B2: 52 0E                sub     SP, #0xE
+087B4: 0F 05                clr     (5, SP)
+087B6: 0F 06                clr     (6, SP)
+                        _$L73:
+                        ; :: fat.c #204: while ( cluster >= 2 && cluster < MAX_CLUSTER 
+087B8: 7B 14                ld      A, (20, SP)
+087BA: A0 02                sub     A, #0x2
+087BC: 7B 13                ld      A, (19, SP)
+087BE: A2 00                sbc     A, #0x0
+087C0: 7B 12                ld      A, (18, SP)
+087C2: A2 00                sbc     A, #0x0
+087C4: 7B 11                ld      A, (17, SP)
+087C6: A2 00                sbc     A, #0x0
+087C8: 24 03                jrnc    0x87CD
+087CA: CC 89 0D             jp      0x890D {_$L75}
+087CD: 7B 14                ld      A, (20, SP)
+087CF: C0 00 5A             sub     A, 0x5A
+087D2: 7B 13                ld      A, (19, SP)
+087D4: C2 00 59             sbc     A, 0x59
+087D7: 7B 12                ld      A, (18, SP)
+087D9: C2 00 58             sbc     A, 0x58
+087DC: 7B 11                ld      A, (17, SP)
+087DE: C2 00 57             sbc     A, 0x57 {MAX_CLUSTER}
+087E1: 25 03                jrc     0x87E6
+087E3: CC 89 0D             jp      0x890D {_$L75}
+                        ; :: fat.c #206: if ( sector == 0 && segment == 0 
+087E6: 7B 05                ld      A, (5, SP)
+087E8: 26 17                jrne    0x8801 {_$L78}
+087EA: 7B 06                ld      A, (6, SP)
+087EC: 26 13                jrne    0x8801 {_$L78}
+                        ; :: fat.c #207: startSector = fatClusterToSector (cluster)
+087EE: 1E 13                ldw     X, (19, SP)
+087F0: 89                   pushw   X
+087F1: 1E 13                ldw     X, (19, SP)
+087F3: 89                   pushw   X
+087F4: CD 83 B5             call    0x83B5 {fatClusterToSector}
+087F7: 5B 04                add     SP, #0x4
+087F9: BE 02                ldw     X, 0x2
+087FB: 1F 03                ldw     (3, SP), X
+087FD: BE 00                ldw     X, 0x0
+087FF: 1F 01                ldw     (1, SP), X
+                        _$L78:
+                        ; :: fat.c #209: ( MMC_ReadSegment (startSector + sector, segment++) != MMC_OK 
+08801: 52 05                sub     SP, #0x5
+08803: 7B 09                ld      A, (9, SP)
+08805: 1B 0A                add     A, (10, SP)
+08807: 6B 13                ld      (19, SP), A
+08809: 7B 08                ld      A, (8, SP)
+0880B: A9 00                adc     A, #0x0
+0880D: 6B 12                ld      (18, SP), A
+0880F: 7B 07                ld      A, (7, SP)
+08811: A9 00                adc     A, #0x0
+08813: 6B 11                ld      (17, SP), A
+08815: 7B 06                ld      A, (6, SP)
+08817: A9 00                adc     A, #0x0
+08819: 6B 10                ld      (16, SP), A
+0881B: 1E 12                ldw     X, (18, SP)
+0881D: 1F 03                ldw     (3, SP), X
+0881F: 1E 10                ldw     X, (16, SP)
+08821: 1F 01                ldw     (1, SP), X
+08823: 7B 0B                ld      A, (11, SP)
+08825: 6B 10                ld      (16, SP), A
+08827: 0C 0B                inc     (11, SP)
+08829: 7B 10                ld      A, (16, SP)
+0882B: 6B 05                ld      (5, SP), A
+0882D: CD 90 92             call    0x9092 {MMC_ReadSegment}
+08830: 5B 05                add     SP, #0x5
+08832: B6 00                ld      A, 0x0
+08834: 27 03                jreq    0x8839
+08836: CC 89 0D             jp      0x890D {_$L75}
+                        ; :: fat.c #210: return; ; :: fat.c #213: ( FAT_EntryType () )       
+08839: CD 86 7C             call    0x867C {FAT_EntryType}
+0883C: B6 00                ld      A, 0x0
+                        ; :: fat.c #214: case MP3_FILE
+0883E: 4D                   tnz     A
+0883F: 27 07                jreq    0x8848 {_$L85}
+                        ; :: fat.c #218: case SUB_DIR
+08841: A1 01                cp      A, #0x1
+08843: 27 0F                jreq    0x8854 {_$L86}
+08845: CC 88 DE             jp      0x88DE {_$L88}
+                        _$L85:
+                        ; :: fat.c #215: (*cnt)++
+08848: 1E 16                ldw     X, (22, SP)
+0884A: 90 93                ldw     Y, X
+0884C: 90 FE                ldw     Y, (Y)
+0884E: 90 5C                incw    Y
+08850: FF                   ldw     (X), Y
+                        ; :: fat.c #216: break
+08851: CC 88 DE             jp      0x88DE {_$L88}
+                        _$L86:
+                        ; :: fat.c #219: if ( level 
+08854: 7B 15                ld      A, (21, SP)
+08856: 26 03                jrne    0x885B
+08858: CC 88 DE             jp      0x88DE {_$L88}
+                        ; :: fat.c #221: MMC_flushSector (segment)
+0885B: 7B 06                ld      A, (6, SP)
+0885D: 88                   push    A
+0885E: CD 92 AC             call    0x92AC {MMC_flushSector}
+08861: 84                   pop     A
+08862: CE 00 2D             ldw     X, 0x2D
+08865: 89                   pushw   X
+08866: CD 83 97             call    0x8397 {endian16}
+08869: 85                   popw    X
+0886A: BE 00                ldw     X, 0x0
+0886C: 1F 09                ldw     (9, SP), X
+0886E: 0F 08                clr     (8, SP)
+08870: 0F 07                clr     (7, SP)
+                        ; :: fat.c #224: clust |= endian16(MMC_Buf.dir.highCluster) << 16
+08872: CE 00 27             ldw     X, 0x27
+08875: 89                   pushw   X
+08876: CD 83 97             call    0x8397 {endian16}
+08879: 85                   popw    X
+0887A: 0F 0E                clr     (14, SP)
+0887C: 0F 0D                clr     (13, SP)
+0887E: B6 01                ld      A, 0x1
+08880: 6B 0C                ld      (12, SP), A
+08882: B6 00                ld      A, 0x0
+08884: 6B 0B                ld      (11, SP), A
+08886: 7B 0A                ld      A, (10, SP)
+08888: 1A 0E                or      A, (14, SP)
+0888A: 6B 0A                ld      (10, SP), A
+0888C: 7B 09                ld      A, (9, SP)
+0888E: 1A 0D                or      A, (13, SP)
+08890: 6B 09                ld      (9, SP), A
+08892: 7B 08                ld      A, (8, SP)
+08894: 1A 0C                or      A, (12, SP)
+08896: 6B 08                ld      (8, SP), A
+08898: 7B 07                ld      A, (7, SP)
+0889A: 1A 0B                or      A, (11, SP)
+0889C: 6B 07                ld      (7, SP), A
+                        ; :: fat.c #226: FAT_searchMP3FilesDir (clust, 0, cnt)
+0889E: 52 07                sub     SP, #0x7
+088A0: 1E 10                ldw     X, (16, SP)
+088A2: 1F 03                ldw     (3, SP), X
+088A4: 1E 0E                ldw     X, (14, SP)
+088A6: 1F 01                ldw     (1, SP), X
+088A8: 0F 05                clr     (5, SP)
+088AA: 1E 1D                ldw     X, (29, SP)
+088AC: 1F 06                ldw     (6, SP), X
+088AE: CD 87 B2             call    0x87B2 {FAT_searchMP3FilesDir}
+088B1: 5B 07                add     SP, #0x7
+                        ; :: fat.c #228: MMC_SkipSegment (startSector + sector, segment)
+088B3: 52 05                sub     SP, #0x5
+088B5: 7B 09                ld      A, (9, SP)
+088B7: 1B 0A                add     A, (10, SP)
+088B9: 6B 13                ld      (19, SP), A
+088BB: 7B 08                ld      A, (8, SP)
+088BD: A9 00                adc     A, #0x0
+088BF: 6B 12                ld      (18, SP), A
+088C1: 7B 07                ld      A, (7, SP)
+088C3: A9 00                adc     A, #0x0
+088C5: 6B 11                ld      (17, SP), A
+088C7: 7B 06                ld      A, (6, SP)
+088C9: A9 00                adc     A, #0x0
+088CB: 6B 10                ld      (16, SP), A
+088CD: 1E 12                ldw     X, (18, SP)
+088CF: 1F 03                ldw     (3, SP), X
+088D1: 1E 10                ldw     X, (16, SP)
+088D3: 1F 01                ldw     (1, SP), X
+088D5: 7B 0B                ld      A, (11, SP)
+088D7: 6B 05                ld      (5, SP), A
+088D9: CD 90 FC             call    0x90FC {MMC_SkipSegment}
+088DC: 5B 05                add     SP, #0x5
+                        _$L88:
+                        ; :: fat.c #232: if ( segment >= (SECTOR_SIZE/SEGMENT_SIZE) 
+088DE: 7B 06                ld      A, (6, SP)
+088E0: A0 10                sub     A, #0x10
+088E2: 24 03                jrnc    0x88E7
+088E4: CC 87 B8             jp      0x87B8 {_$L73}
+                        ; :: fat.c #234: segment = 0
+088E7: 0F 06                clr     (6, SP)
+                        ; :: fat.c #235: sector++
+088E9: 0C 05                inc     (5, SP)
+                        ; :: fat.c #237: if ( sector >= fat_info.sectorsPerCluster 
+088EB: 7B 05                ld      A, (5, SP)
+088ED: C0 00 48             sub     A, 0x48
+088F0: 24 03                jrnc    0x88F5
+088F2: CC 87 B8             jp      0x87B8 {_$L73}
+                        ; :: fat.c #239: cluster = fatNextCluster (cluster)
+088F5: 1E 13                ldw     X, (19, SP)
+088F7: 89                   pushw   X
+088F8: 1E 13                ldw     X, (19, SP)
+088FA: 89                   pushw   X
+088FB: CD 83 F8             call    0x83F8 {fatNextCluster}
+088FE: 5B 04                add     SP, #0x4
+08900: BE 02                ldw     X, 0x2
+08902: 1F 13                ldw     (19, SP), X
+08904: BE 00                ldw     X, 0x0
+08906: 1F 11                ldw     (17, SP), X
+                        ; :: fat.c #240: sector = 0
+08908: 0F 05                clr     (5, SP)
+0890A: CC 87 B8             jp      0x87B8 {_$L73}
+                        _$L75:
+0890D: 5B 0E                add     SP, #0xE
+0890F: 81                   ret
+                        (fat.obj line#410, 281 bytes)
+                        FILE_searchMP3File::
+08910: 52 0C                sub     SP, #0xC
+                        ; :: fat.c #252: if ( files == 0 
+08912: 1E 0F                ldw     X, (15, SP)
+08914: 26 07                jrne    0x891D {_$L98}
+                        ; :: fat.c #253: return NULL
+08916: 3F 01                clr     0x1
+08918: 3F 00                clr     0x0
+0891A: CC 8A 26             jp      0x8A26 {_$L96}
+                        _$L98:
+                        ; :: fat.c #255: (level = 0
+0891D: 0F 01                clr     (1, SP)
+                        _$L100:
+                        ; :: fat.c #255: level != 2
+0891F: 7B 01                ld      A, (1, SP)
+08921: A1 02                cp      A, #0x2
+                        _$L207:
+08923: 26 03                jrne    0x8928 {_$L208}
+08925: CC 8A 22             jp      0x8A22 {_$L102}
+                        _$L208:
+                        ; :: fat.c #257: if ( fat_info.fatType == FAT16 
+08928: C6 00 47             ld      A, 0x47 {fat_info}
+0892B: 27 03                jreq    0x8930
+0892D: CC 89 F4             jp      0x89F4 {_$L105}
+08930: CE 00 53             ldw     X, 0x53
+08933: 1F 06                ldw     (6, SP), X
+08935: CE 00 51             ldw     X, 0x51
+08938: 1F 04                ldw     (4, SP), X
+0893A: 0F 08                clr     (8, SP)
+0893C: CE 00 55             ldw     X, 0x55
+0893F: 1F 09                ldw     (9, SP), X
+                        _$L107:
+                        ; :: fat.c #263: while ( dir_cnt-- 
+08941: 1E 09                ldw     X, (9, SP)
+08943: 5A                   decw    X
+08944: 1F 09                ldw     (9, SP), X
+08946: 5C                   incw    X
+08947: 26 03                jrne    0x894C
+08949: CC 8A 1D             jp      0x8A1D {_$L129}
+                        ; :: fat.c #265: MMC_ReadSegment (sector, segment++)
+0894C: 52 05                sub     SP, #0x5
+0894E: 1E 0B                ldw     X, (11, SP)
+08950: 1F 03                ldw     (3, SP), X
+08952: 1E 09                ldw     X, (9, SP)
+08954: 1F 01                ldw     (1, SP), X
+08956: 7B 0D                ld      A, (13, SP)
+08958: 6B 10                ld      (16, SP), A
+0895A: 0C 0D                inc     (13, SP)
+0895C: 7B 10                ld      A, (16, SP)
+0895E: 6B 05                ld      (5, SP), A
+08960: CD 90 92             call    0x9092 {MMC_ReadSegment}
+08963: 5B 05                add     SP, #0x5
+                        ; :: fat.c #268: switch ( FAT_EntryType() )			
+08965: CD 86 7C             call    0x867C {FAT_EntryType}
+08968: B6 00                ld      A, 0x0
+                        ; :: fat.c #269: case MP3_FILE
+0896A: 4D                   tnz     A
+0896B: 27 06                jreq    0x8973 {_$L111}
+                        ; :: fat.c #280: case SUB_DIR
+0896D: A1 01                cp      A, #0x1
+0896F: 27 1A                jreq    0x898B {_$L112}
+08971: 20 65                jra     0x89D8 {_$L110}
+                        _$L111:
+                        ; :: fat.c #270: if ( !level 
+08973: 7B 01                ld      A, (1, SP)
+08975: 26 61                jrne    0x89D8 {_$L110}
+                        ; :: fat.c #272: if ( --files == 0 
+08977: 1E 0F                ldw     X, (15, SP)
+08979: 5A                   decw    X
+0897A: 1F 0F                ldw     (15, SP), X
+0897C: 26 5A                jrne    0x89D8 {_$L110}
+                        ; :: fat.c #274: MMC_flushSector (segment)
+0897E: 7B 08                ld      A, (8, SP)
+08980: 88                   push    A
+08981: CD 92 AC             call    0x92AC {MMC_flushSector}
+08984: 84                   pop     A
+                        ; :: fat.c #275: return getMP3Info ()
+08985: CD 8B BA             call    0x8BBA {getMP3Info}
+08988: CC 8A 26             jp      0x8A26 {_$L96}
+                        ; :: fat.c #278: break
+                        _$L112:
+                        ; :: fat.c #281: if ( level 
+0898B: 7B 01                ld      A, (1, SP)
+0898D: 27 49                jreq    0x89D8 {_$L110}
+                        ; :: fat.c #283: MMC_flushSector (segment)
+0898F: 7B 08                ld      A, (8, SP)
+08991: 88                   push    A
+08992: CD 92 AC             call    0x92AC {MMC_flushSector}
+08995: 84                   pop     A
+                        ; :: fat.c #285: fh = FAT_searchMP3FileDir (endian16(MMC_Buf.dir.startCluster), 0, &files)
+08996: 52 07                sub     SP, #0x7
+08998: CE 00 2D             ldw     X, 0x2D
+0899B: 89                   pushw   X
+0899C: CD 83 97             call    0x8397 {endian16}
+0899F: 85                   popw    X
+089A0: BE 00                ldw     X, 0x0
+089A2: 1F 12                ldw     (18, SP), X
+089A4: 1F 03                ldw     (3, SP), X
+089A6: 0F 02                clr     (2, SP)
+089A8: 0F 01                clr     (1, SP)
+089AA: 0F 05                clr     (5, SP)
+089AC: 96                   ldw     X, SP
+089AD: 1C 00 16             addw    X, #0x16
+089B0: 1F 06                ldw     (6, SP), X
+089B2: CD 8A 29             call    0x8A29 {FAT_searchMP3FileDir}
+089B5: 5B 07                add     SP, #0x7
+089B7: BE 00                ldw     X, 0x0
+089B9: 1F 02                ldw     (2, SP), X
+                        ; :: fat.c #287: if ( fh 
+089BB: 1E 02                ldw     X, (2, SP)
+089BD: 27 06                jreq    0x89C5 {_$L123}
+                        ; :: fat.c #288: return fh
+089BF: 1E 02                ldw     X, (2, SP)
+089C1: BF 00                ldw     0x0, X
+089C3: 20 61                jra     0x8A26 {_$L96}
+                        _$L123:
+                        ; :: fat.c #290: (sector, segment)
+089C5: 52 05                sub     SP, #0x5
+089C7: 1E 0B                ldw     X, (11, SP)
+089C9: 1F 03                ldw     (3, SP), X
+089CB: 1E 09                ldw     X, (9, SP)
+089CD: 1F 01                ldw     (1, SP), X
+089CF: 7B 0D                ld      A, (13, SP)
+089D1: 6B 05                ld      (5, SP), A
+089D3: CD 90 FC             call    0x90FC {MMC_SkipSegment}
+089D6: 5B 05                add     SP, #0x5
+                        ; :: fat.c #292: break
+                        _$L110:
+                        ; :: fat.c #295: if ( segment >= (SECTOR_SIZE/SEGMENT_SIZE) 
+089D8: 7B 08                ld      A, (8, SP)
+089DA: A0 10                sub     A, #0x10
+089DC: 24 03                jrnc    0x89E1
+089DE: CC 89 41             jp      0x8941 {_$L107}
+                        ; :: fat.c #297: sector++
+089E1: 1E 06                ldw     X, (6, SP)
+089E3: 1C 00 01             addw    X, #0x1
+089E6: 1F 06                ldw     (6, SP), X
+089E8: 1E 04                ldw     X, (4, SP)
+089EA: 24 01                jrnc    0x89ED
+089EC: 5C                   incw    X
+089ED: 1F 04                ldw     (4, SP), X
+                        ; :: fat.c #298: segment = 0
+089EF: 0F 08                clr     (8, SP)
+089F1: CC 89 41             jp      0x8941 {_$L107}
+                        _$L105:
+                        ; :: fat.c #304: else					fh = FAT_searchMP3FileDir (fat_info.FAT.fat32.rootDirCluster, level, &files)
+089F4: 52 07                sub     SP, #0x7
+089F6: CE 00 53             ldw     X, 0x53
+089F9: 1F 03                ldw     (3, SP), X
+089FB: CE 00 51             ldw     X, 0x51
+089FE: 1F 01                ldw     (1, SP), X
+08A00: 7B 08                ld      A, (8, SP)
+08A02: 6B 05                ld      (5, SP), A
+08A04: 96                   ldw     X, SP
+08A05: 1C 00 16             addw    X, #0x16
+08A08: 1F 06                ldw     (6, SP), X
+08A0A: CD 8A 29             call    0x8A29 {FAT_searchMP3FileDir}
+08A0D: 5B 07                add     SP, #0x7
+08A0F: BE 00                ldw     X, 0x0
+08A11: 1F 02                ldw     (2, SP), X
+                        ; :: fat.c #306: if ( fh 
+08A13: 1E 02                ldw     X, (2, SP)
+08A15: 27 06                jreq    0x8A1D {_$L129}
+                        ; :: fat.c #307: return fh
+08A17: 1E 02                ldw     X, (2, SP)
+08A19: BF 00                ldw     0x0, X
+08A1B: 20 09                jra     0x8A26 {_$L96}
+                        _$L129:
+                        ; :: fat.c #255: level++
+08A1D: 0C 01                inc     (1, SP)
+08A1F: CC 89 1F             jp      0x891F {_$L100}
+                        _$L102:
+                        ; :: fat.c #310: return NULL
+08A22: 3F 01                clr     0x1
+08A24: 3F 00                clr     0x0
+                        _$L96:
+08A26: 5B 0C                add     SP, #0xC
+08A28: 81                   ret
+                        (fat.obj line#512, 401 bytes)
+                        FAT_searchMP3FileDir::
+08A29: 52 10                sub     SP, #0x10
+08A2B: 0F 05                clr     (5, SP)
+08A2D: 0F 06                clr     (6, SP)
+                        _$L132:
+                        ; :: fat.c #320: while ( cluster >= 2 && cluster < MAX_CLUSTER 
+08A2F: 7B 16                ld      A, (22, SP)
+08A31: A0 02                sub     A, #0x2
+08A33: 7B 15                ld      A, (21, SP)
+08A35: A2 00                sbc     A, #0x0
+08A37: 7B 14                ld      A, (20, SP)
+08A39: A2 00                sbc     A, #0x0
+08A3B: 7B 13                ld      A, (19, SP)
+08A3D: A2 00                sbc     A, #0x0
+08A3F: 24 03                jrnc    0x8A44
+08A41: CC 8B B3             jp      0x8BB3 {_$L134}
+08A44: 7B 16                ld      A, (22, SP)
+08A46: C0 00 5A             sub     A, 0x5A
+08A49: 7B 15                ld      A, (21, SP)
+08A4B: C2 00 59             sbc     A, 0x59
+08A4E: 7B 14                ld      A, (20, SP)
+08A50: C2 00 58             sbc     A, 0x58
+08A53: 7B 13                ld      A, (19, SP)
+08A55: C2 00 57             sbc     A, 0x57 {MAX_CLUSTER}
+08A58: 25 03                jrc     0x8A5D
+08A5A: CC 8B B3             jp      0x8BB3 {_$L134}
+                        ; :: fat.c #322: if ( sector == 0 && segment == 0 
+08A5D: 7B 05                ld      A, (5, SP)
+08A5F: 26 17                jrne    0x8A78 {_$L137}
+08A61: 7B 06                ld      A, (6, SP)
+08A63: 26 13                jrne    0x8A78 {_$L137}
+                        ; :: fat.c #323: startSector = fatClusterToSector (cluster)
+08A65: 1E 15                ldw     X, (21, SP)
+08A67: 89                   pushw   X
+08A68: 1E 15                ldw     X, (21, SP)
+08A6A: 89                   pushw   X
+08A6B: CD 83 B5             call    0x83B5 {fatClusterToSector}
+08A6E: 5B 04                add     SP, #0x4
+08A70: BE 02                ldw     X, 0x2
+08A72: 1F 03                ldw     (3, SP), X
+08A74: BE 00                ldw     X, 0x0
+08A76: 1F 01                ldw     (1, SP), X
+                        _$L137:
+                        ; :: fat.c #325: ( MMC_ReadSegment (startSector + sector, segment++) != MMC_OK 
+08A78: 52 05                sub     SP, #0x5
+08A7A: 7B 09                ld      A, (9, SP)
+08A7C: 1B 0A                add     A, (10, SP)
+08A7E: 6B 15                ld      (21, SP), A
+08A80: 7B 08                ld      A, (8, SP)
+08A82: A9 00                adc     A, #0x0
+08A84: 6B 14                ld      (20, SP), A
+08A86: 7B 07                ld      A, (7, SP)
+08A88: A9 00                adc     A, #0x0
+08A8A: 6B 13                ld      (19, SP), A
+08A8C: 7B 06                ld      A, (6, SP)
+08A8E: A9 00                adc     A, #0x0
+08A90: 6B 12                ld      (18, SP), A
+08A92: 1E 14                ldw     X, (20, SP)
+08A94: 1F 03                ldw     (3, SP), X
+08A96: 1E 12                ldw     X, (18, SP)
+08A98: 1F 01                ldw     (1, SP), X
+08A9A: 7B 0B                ld      A, (11, SP)
+08A9C: 6B 12                ld      (18, SP), A
+08A9E: 0C 0B                inc     (11, SP)
+08AA0: 7B 12                ld      A, (18, SP)
+08AA2: 6B 05                ld      (5, SP), A
+08AA4: CD 90 92             call    0x9092 {MMC_ReadSegment}
+08AA7: 5B 05                add     SP, #0x5
+08AA9: B6 00                ld      A, 0x0
+08AAB: 27 07                jreq    0x8AB4 {_$L141}
+                        ; :: fat.c #326: return NULL
+08AAD: 3F 01                clr     0x1
+08AAF: 3F 00                clr     0x0
+08AB1: CC 8B B7             jp      0x8BB7 {_$L131}
+                        _$L141:
+                        ; :: fat.c #329: ( FAT_EntryType () )	
+08AB4: CD 86 7C             call    0x867C {FAT_EntryType}
+08AB7: B6 00                ld      A, 0x0
+                        ; :: fat.c #330: case MP3_FILE
+08AB9: 4D                   tnz     A
+08ABA: 27 07                jreq    0x8AC3 {_$L144}
+                        ; :: fat.c #341: case SUB_DIR
+08ABC: A1 01                cp      A, #0x1
+08ABE: 27 2C                jreq    0x8AEC {_$L145}
+08AC0: CC 8B 84             jp      0x8B84 {_$L143}
+                        _$L144:
+                        ; :: fat.c #331: if ( !level 
+08AC3: 7B 17                ld      A, (23, SP)
+08AC5: 27 03                jreq    0x8ACA
+08AC7: CC 8B 84             jp      0x8B84 {_$L143}
+                        ; :: fat.c #333: if ( --(*files) == 0 
+08ACA: 1E 18                ldw     X, (24, SP)
+08ACC: 90 93                ldw     Y, X
+08ACE: 90 FE                ldw     Y, (Y)
+08AD0: 90 5A                decw    Y
+08AD2: FF                   ldw     (X), Y
+08AD3: 1E 18                ldw     X, (24, SP)
+08AD5: FE                   ldw     X, (X)
+08AD6: 27 03                jreq    0x8ADB
+08AD8: CC 8B 84             jp      0x8B84 {_$L143}
+                        ; :: fat.c #335: MMC_flushSector (segment+1)
+08ADB: 7B 06                ld      A, (6, SP)
+08ADD: AB 01                add     A, #0x1
+08ADF: 6B 0D                ld      (13, SP), A
+08AE1: 88                   push    A
+08AE2: CD 92 AC             call    0x92AC {MMC_flushSector}
+08AE5: 84                   pop     A
+                        ; :: fat.c #336: return getMP3Info ()
+08AE6: CD 8B BA             call    0x8BBA {getMP3Info}
+08AE9: CC 8B B7             jp      0x8BB7 {_$L131}
+                        ; :: fat.c #339: break
+                        _$L145:
+                        ; :: fat.c #342: if ( level 
+08AEC: 7B 17                ld      A, (23, SP)
+08AEE: 26 03                jrne    0x8AF3
+08AF0: CC 8B 84             jp      0x8B84 {_$L143}
+                        ; :: fat.c #344: MMC_flushSector (segment)
+08AF3: 7B 06                ld      A, (6, SP)
+08AF5: 88                   push    A
+08AF6: CD 92 AC             call    0x92AC {MMC_flushSector}
+08AF9: 84                   pop     A
+08AFA: CE 00 2D             ldw     X, 0x2D
+08AFD: 89                   pushw   X
+08AFE: CD 83 97             call    0x8397 {endian16}
+08B01: 85                   popw    X
+08B02: BE 00                ldw     X, 0x0
+08B04: 1F 09                ldw     (9, SP), X
+08B06: 0F 08                clr     (8, SP)
+08B08: 0F 07                clr     (7, SP)
+                        ; :: fat.c #347: clust |= endian16(MMC_Buf.dir.highCluster) << 16
+08B0A: CE 00 27             ldw     X, 0x27
+08B0D: 89                   pushw   X
+08B0E: CD 83 97             call    0x8397 {endian16}
+08B11: 85                   popw    X
+08B12: 0F 10                clr     (16, SP)
+08B14: 0F 0F                clr     (15, SP)
+08B16: B6 01                ld      A, 0x1
+08B18: 6B 0E                ld      (14, SP), A
+08B1A: B6 00                ld      A, 0x0
+08B1C: 6B 0D                ld      (13, SP), A
+08B1E: 7B 0A                ld      A, (10, SP)
+08B20: 1A 10                or      A, (16, SP)
+08B22: 6B 0A                ld      (10, SP), A
+08B24: 7B 09                ld      A, (9, SP)
+08B26: 1A 0F                or      A, (15, SP)
+08B28: 6B 09                ld      (9, SP), A
+08B2A: 7B 08                ld      A, (8, SP)
+08B2C: 1A 0E                or      A, (14, SP)
+08B2E: 6B 08                ld      (8, SP), A
+08B30: 7B 07                ld      A, (7, SP)
+08B32: 1A 0D                or      A, (13, SP)
+08B34: 6B 07                ld      (7, SP), A
+08B36: 52 07                sub     SP, #0x7
+08B38: 1E 10                ldw     X, (16, SP)
+08B3A: 1F 03                ldw     (3, SP), X
+08B3C: 1E 0E                ldw     X, (14, SP)
+08B3E: 1F 01                ldw     (1, SP), X
+08B40: 0F 05                clr     (5, SP)
+08B42: 1E 1F                ldw     X, (31, SP)
+08B44: 1F 06                ldw     (6, SP), X
+08B46: CD 8A 29             call    0x8A29 {FAT_searchMP3FileDir}
+08B49: 5B 07                add     SP, #0x7
+08B4B: BE 00                ldw     X, 0x0
+08B4D: 1F 0B                ldw     (11, SP), X
+                        ; :: fat.c #350: if ( fh 
+08B4F: 1E 0B                ldw     X, (11, SP)
+08B51: 27 06                jreq    0x8B59 {_$L156}
+                        ; :: fat.c #351: return fh
+08B53: 1E 0B                ldw     X, (11, SP)
+08B55: BF 00                ldw     0x0, X
+08B57: 20 5E                jra     0x8BB7 {_$L131}
+                        _$L156:
+                        ; :: fat.c #353: (startSector+sector, segment)
+08B59: 52 05                sub     SP, #0x5
+08B5B: 7B 09                ld      A, (9, SP)
+08B5D: 1B 0A                add     A, (10, SP)
+08B5F: 6B 15                ld      (21, SP), A
+08B61: 7B 08                ld      A, (8, SP)
+08B63: A9 00                adc     A, #0x0
+08B65: 6B 14                ld      (20, SP), A
+08B67: 7B 07                ld      A, (7, SP)
+08B69: A9 00                adc     A, #0x0
+08B6B: 6B 13                ld      (19, SP), A
+08B6D: 7B 06                ld      A, (6, SP)
+08B6F: A9 00                adc     A, #0x0
+08B71: 6B 12                ld      (18, SP), A
+08B73: 1E 14                ldw     X, (20, SP)
+08B75: 1F 03                ldw     (3, SP), X
+08B77: 1E 12                ldw     X, (18, SP)
+08B79: 1F 01                ldw     (1, SP), X
+08B7B: 7B 0B                ld      A, (11, SP)
+08B7D: 6B 05                ld      (5, SP), A
+08B7F: CD 90 FC             call    0x90FC {MMC_SkipSegment}
+08B82: 5B 05                add     SP, #0x5
+                        ; :: fat.c #355: break
+                        _$L143:
+                        ; :: fat.c #358: if ( segment >= (SECTOR_SIZE/SEGMENT_SIZE) 
+08B84: 7B 06                ld      A, (6, SP)
+08B86: A0 10                sub     A, #0x10
+08B88: 24 03                jrnc    0x8B8D
+08B8A: CC 8A 2F             jp      0x8A2F {_$L132}
+                        ; :: fat.c #360: segment = 0
+08B8D: 0F 06                clr     (6, SP)
+                        ; :: fat.c #362: if ( ++sector >= fat_info.sectorsPerCluster 
+08B8F: 0C 05                inc     (5, SP)
+08B91: 7B 05                ld      A, (5, SP)
+08B93: C0 00 48             sub     A, 0x48
+08B96: 24 03                jrnc    0x8B9B
+08B98: CC 8A 2F             jp      0x8A2F {_$L132}
+                        ; :: fat.c #364: cluster = fatNextCluster (cluster)
+08B9B: 1E 15                ldw     X, (21, SP)
+08B9D: 89                   pushw   X
+08B9E: 1E 15                ldw     X, (21, SP)
+08BA0: 89                   pushw   X
+08BA1: CD 83 F8             call    0x83F8 {fatNextCluster}
+08BA4: 5B 04                add     SP, #0x4
+08BA6: BE 02                ldw     X, 0x2
+08BA8: 1F 15                ldw     (21, SP), X
+08BAA: BE 00                ldw     X, 0x0
+08BAC: 1F 13                ldw     (19, SP), X
+                        ; :: fat.c #365: sector  = 0
+08BAE: 0F 05                clr     (5, SP)
+08BB0: CC 8A 2F             jp      0x8A2F {_$L132}
+                        _$L134:
+                        ; :: fat.c #370: return NULL
+08BB3: 3F 01                clr     0x1
+08BB5: 3F 00                clr     0x0
+                        _$L131:
+08BB7: 5B 10                add     SP, #0x10
+08BB9: 81                   ret
+                        (fat.obj line#609, 114 bytes)
+                        getMP3Info::
+08BBA: 52 04                sub     SP, #0x4
+                        ; :: fat.c #377: file_desc.size    = endian32(&MMC_Buf.dir.fileSize)
+08BBC: AE 00 2F             ldw     X, #0x2F
+08BBF: 89                   pushw   X
+08BC0: CD 83 5F             call    0x835F {endian32}
+08BC3: 85                   popw    X
+08BC4: BE 02                ldw     X, 0x2
+08BC6: CF 00 3B             ldw     0x3B, X
+08BC9: BE 00                ldw     X, 0x0
+08BCB: CF 00 39             ldw     0x39 {file_desc}, X
+                        ; :: fat.c #378: file_desc.cluster = endian16(MMC_Buf.dir.startCluster)
+08BCE: CE 00 2D             ldw     X, 0x2D
+08BD1: 89                   pushw   X
+08BD2: CD 83 97             call    0x8397 {endian16}
+08BD5: 85                   popw    X
+08BD6: BE 00                ldw     X, 0x0
+08BD8: CF 00 3F             ldw     0x3F, X
+08BDB: 72 5F 00 3E          clr     0x3E
+08BDF: 72 5F 00 3D          clr     0x3D
+                        ; :: fat.c #380: if ( fat_info.fatType != FAT16 
+08BE3: C6 00 47             ld      A, 0x47 {fat_info}
+08BE6: 27 34                jreq    0x8C1C {_$L166}
+                        ; :: fat.c #381: file_desc.cluster |= endian16(MMC_Buf.dir.highCluster) << 16
+08BE8: CE 00 27             ldw     X, 0x27
+08BEB: 89                   pushw   X
+08BEC: CD 83 97             call    0x8397 {endian16}
+08BEF: 85                   popw    X
+08BF0: 0F 04                clr     (4, SP)
+08BF2: 0F 03                clr     (3, SP)
+08BF4: B6 01                ld      A, 0x1
+08BF6: 6B 02                ld      (2, SP), A
+08BF8: B6 00                ld      A, 0x0
+08BFA: 6B 01                ld      (1, SP), A
+08BFC: C6 00 40             ld      A, 0x40
+08BFF: 1A 04                or      A, (4, SP)
+08C01: C7 00 40             ld      0x40, A
+08C04: C6 00 3F             ld      A, 0x3F
+08C07: 1A 03                or      A, (3, SP)
+08C09: C7 00 3F             ld      0x3F, A
+08C0C: C6 00 3E             ld      A, 0x3E
+08C0F: 1A 02                or      A, (2, SP)
+08C11: C7 00 3E             ld      0x3E, A
+08C14: C6 00 3D             ld      A, 0x3D
+08C17: 1A 01                or      A, (1, SP)
+08C19: C7 00 3D             ld      0x3D, A
+                        _$L166:
+                        ; :: fat.c #383: .sector  = 0
+08C1C: 72 5F 00 45          clr     0x45
+                        ; :: fat.c #384: file_desc.segment = 0
+08C20: 72 5F 00 46          clr     0x46
+                        ; :: fat.c #385: return &file_desc
+08C24: AE 00 39             ldw     X, #0x39
+08C27: BF 00                ldw     0x0, X
+08C29: 5B 04                add     SP, #0x4
+08C2B: 81                   ret
+                        (fat.obj line#634, 47 bytes)
+                        CheckSignature:
+                        ; :: fat.c #391: if ( MMC_ReadSegOffset(sector, 510) == MMC_OK 
+08C2C: 52 06                sub     SP, #0x6
+08C2E: 1E 0B                ldw     X, (11, SP)
+08C30: 1F 03                ldw     (3, SP), X
+08C32: 1E 09                ldw     X, (9, SP)
+08C34: 1F 01                ldw     (1, SP), X
+08C36: AE 01 FE             ldw     X, #0x1FE
+08C39: 1F 05                ldw     (5, SP), X
+08C3B: CD 91 52             call    0x9152 {MMC_ReadSegOffset}
+08C3E: 5B 06                add     SP, #0x6
+08C40: B6 00                ld      A, 0x0
+08C42: 26 14                jrne    0x8C58 {_$L173}
+                        ; :: fat.c #393: if ( BUFFER[0] == BOOTSIG0 && BUFFER[1] == BOOTSIG1 
+08C44: C6 00 13             ld      A, 0x13 {MMC_Buf}
+08C47: A1 55                cp      A, #0x55
+                        _$L209:
+08C49: 26 0D                jrne    0x8C58 {_$L173}
+                        _$L210:
+08C4B: C6 00 14             ld      A, 0x14
+08C4E: A1 AA                cp      A, #0xAA
+                        _$L211:
+08C50: 26 06                jrne    0x8C58 {_$L173}
+                        _$L212:
+                        ; :: fat.c #394: return 1
+08C52: 35 01 00 00          mov     0x0, #0x1
+08C56: 20 02                jra     0x8C5A {_$L168}
+                        _$L173:
+                        ; :: fat.c #397: 0
+08C58: 3F 00                clr     0x0
+                        _$L168:
+08C5A: 81                   ret
+                        (fat.obj line#657, 169 bytes)
+                        FILE_nextFileSector::
+08C5B: 52 04                sub     SP, #0x4
+                        ; :: fat.c #403: if ( file->sector >= fat_info.sectorsPerCluster 
+08C5D: 1E 07                ldw     X, (7, SP)
+08C5F: E6 0C                ld      A, (12, X)
+08C61: C0 00 48             sub     A, 0x48
+08C64: 25 21                jrc     0x8C87 {_$L178}
+                        ; :: fat.c #405: file->cluster = fatNextCluster (file->cluster)
+08C66: 1E 07                ldw     X, (7, SP)
+08C68: 90 93                ldw     Y, X
+08C6A: 90 EE 06             ldw     Y, (6, Y)
+08C6D: 90 89                pushw   Y
+08C6F: EE 04                ldw     X, (4, X)
+08C71: 89                   pushw   X
+08C72: CD 83 F8             call    0x83F8 {fatNextCluster}
+08C75: 5B 04                add     SP, #0x4
+08C77: 1E 07                ldw     X, (7, SP)
+08C79: 90 BE 02             ldw     Y, 0x2
+08C7C: EF 06                ldw     (6, X), Y
+08C7E: 90 BE 00             ldw     Y, 0x0
+08C81: EF 04                ldw     (4, X), Y
+                        ; :: fat.c #406: file->sector  = 0
+08C83: 1E 07                ldw     X, (7, SP)
+08C85: 6F 0C                clr     (12, X)
+                        _$L178:
+                        ; :: fat.c #409: ( file->cluster >= MAX_CLUSTER 
+08C87: 1E 07                ldw     X, (7, SP)
+08C89: E6 07                ld      A, (7, X)
+08C8B: C0 00 5A             sub     A, 0x5A
+08C8E: E6 06                ld      A, (6, X)
+08C90: C2 00 59             sbc     A, 0x59
+08C93: E6 05                ld      A, (5, X)
+08C95: C2 00 58             sbc     A, 0x58
+08C98: E6 04                ld      A, (4, X)
+08C9A: C2 00 57             sbc     A, 0x57 {MAX_CLUSTER}
+08C9D: 25 04                jrc     0x8CA3 {_$L181}
+                        ; :: fat.c #410: return 0
+08C9F: 3F 00                clr     0x0
+08CA1: 20 5E                jra     0x8D01 {_$L176}
+                        _$L181:
+                        ; :: fat.c #412: ( file->sector == 0 
+08CA3: 1E 07                ldw     X, (7, SP)
+08CA5: E6 0C                ld      A, (12, X)
+08CA7: 26 1D                jrne    0x8CC6 {_$L184}
+                        ; :: fat.c #413: file->startSector = fatClusterToSector (file->cluster)
+08CA9: 1E 07                ldw     X, (7, SP)
+08CAB: 90 93                ldw     Y, X
+08CAD: 90 EE 06             ldw     Y, (6, Y)
+08CB0: 90 89                pushw   Y
+08CB2: EE 04                ldw     X, (4, X)
+08CB4: 89                   pushw   X
+08CB5: CD 83 B5             call    0x83B5 {fatClusterToSector}
+08CB8: 5B 04                add     SP, #0x4
+08CBA: 1E 07                ldw     X, (7, SP)
+08CBC: 90 BE 02             ldw     Y, 0x2
+08CBF: EF 0A                ldw     (10, X), Y
+08CC1: 90 BE 00             ldw     Y, 0x0
+08CC4: EF 08                ldw     (8, X), Y
+                        _$L184:
+                        ; :: fat.c #415: ( MMC_NextSector (file->startSector + file->sector++) != MMC_OK 
+08CC6: 1E 07                ldw     X, (7, SP)
+08CC8: E6 0C                ld      A, (12, X)
+08CCA: 6B 01                ld      (1, SP), A
+08CCC: 1E 07                ldw     X, (7, SP)
+08CCE: 6C 0C                inc     (12, X)
+08CD0: 1E 07                ldw     X, (7, SP)
+08CD2: E6 0B                ld      A, (11, X)
+08CD4: 1B 01                add     A, (1, SP)
+08CD6: 6B 04                ld      (4, SP), A
+08CD8: E6 0A                ld      A, (10, X)
+08CDA: A9 00                adc     A, #0x0
+08CDC: 6B 03                ld      (3, SP), A
+08CDE: E6 09                ld      A, (9, X)
+08CE0: A9 00                adc     A, #0x0
+08CE2: 6B 02                ld      (2, SP), A
+08CE4: E6 08                ld      A, (8, X)
+08CE6: A9 00                adc     A, #0x0
+08CE8: 6B 01                ld      (1, SP), A
+08CEA: 1E 03                ldw     X, (3, SP)
+08CEC: 89                   pushw   X
+08CED: 1E 03                ldw     X, (3, SP)
+08CEF: 89                   pushw   X
+08CF0: CD 92 4E             call    0x924E {MMC_NextSector}
+08CF3: 5B 04                add     SP, #0x4
+08CF5: B6 00                ld      A, 0x0
+08CF7: 27 04                jreq    0x8CFD {_$L187}
+                        ; :: fat.c #416: return 0
+08CF9: 3F 00                clr     0x0
+08CFB: 20 04                jra     0x8D01 {_$L176}
+                        _$L187:
+                        ; :: fat.c #418: -1
+08CFD: 35 FF 00 00          mov     0x0, #0xFF
+                        _$L176:
+08D01: 5B 04                add     SP, #0x4
+08D03: 81                   ret
+                        (key.obj line#10, 13 bytes)
+                        KEY_init::
+                        ; :: key.c #14: sbi (PA_CR1, KEY_PLAY_PIN)
+08D04: 72 1A 50 03          bset    0x5003, #5
+                        ; :: key.c #15: sbi (PC_CR1, KEY_UP_PIN)
+08D08: 72 14 50 0D          bset    0x500D, #2
+                        ; :: key.c #16: sbi (PE_CR1, KEY_DOWN_PIN)
+08D0C: 72 1A 50 17          bset    0x5017, #5
+08D10: 81                   ret
+                        (key.obj line#24, 155 bytes)
+                        KEY_scan::
+08D11: 52 03                sub     SP, #0x3
+08D13: 0F 01                clr     (1, SP)
+                        ; :: key.c #26: if ( (PA_IDR & (1 << KEY_PLAY_PIN)) == 0 
+08D15: 72 0A 50 01 04       btjt    0x5001, #5, 0x8D1E {_$L4}
+                        ; :: key.c #27: key = KEY_PLAY
+08D1A: A6 01                ld      A, #0x1
+08D1C: 6B 01                ld      (1, SP), A
+                        _$L4:
+                        ; :: key.c #29: ( (PC_IDR & (1 << KEY_UP_PIN)) == 0 
+08D1E: 72 04 50 0B 06       btjt    0x500B, #2, 0x8D29 {_$L7}
+                        ; :: key.c #30: key |= KEY_UP
+08D23: 7B 01                ld      A, (1, SP)
+08D25: AA 02                or      A, #0x2
+08D27: 6B 01                ld      (1, SP), A
+                        _$L7:
+                        ; :: key.c #32: ( (PE_IDR & (1 << KEY_DOWN_PIN)) == 0 
+08D29: 72 0A 50 15 06       btjt    0x5015, #5, 0x8D34 {_$L10}
+                        ; :: key.c #33: key |= KEY_DOWN
+08D2E: 7B 01                ld      A, (1, SP)
+08D30: AA 04                or      A, #0x4
+08D32: 6B 01                ld      (1, SP), A
+                        _$L10:
+                        ; :: key.c #36: ( KEY_stat )   
+08D34: B6 06                ld      A, 0x6 {KEY_stat}
+                        ; :: key.c #37: case KEY_IDLE
+08D36: 4D                   tnz     A
+08D37: 27 0E                jreq    0x8D47 {_$L13}
+                        ; :: key.c #47: case KEY_PRESSED
+08D39: A1 01                cp      A, #0x1
+08D3B: 27 20                jreq    0x8D5D {_$L14}
+                        ; :: key.c #58: case KEY_WAIT1
+08D3D: A1 02                cp      A, #0x2
+08D3F: 27 3C                jreq    0x8D7D {_$L15}
+                        ; :: key.c #66: case KEY_WAIT2
+08D41: A1 03                cp      A, #0x3
+08D43: 27 47                jreq    0x8D8C {_$L16}
+08D45: 20 60                jra     0x8DA7 {_$L17}
+                        _$L13:
+                        ; :: key.c #38: if ( key 
+08D47: 7B 01                ld      A, (1, SP)
+08D49: 27 5E                jreq    0x8DA9 {_$L12}
+                        ; :: key.c #40: KEY_val  = 0
+08D4B: 3F 07                clr     0x7 {KEY_val}
+                        ; :: key.c #41: key_hold = key
+08D4D: 7B 01                ld      A, (1, SP)
+08D4F: C7 00 5B             ld      0x5B {KEY_scan_$1_key_hold}, A
+                        ; :: key.c #42: KEY_stat = KEY_PRESSED
+08D52: 35 01 00 06          mov     0x6 {KEY_stat}, #0x1
+                        ; :: key.c #43: key_time = Timer0
+08D56: BE 11                ldw     X, 0x11 {Timer0}
+08D58: CF 00 5C             ldw     0x5C {KEY_scan_$2_key_time}, X
+                        ; :: key.c #45: break
+08D5B: 20 4C                jra     0x8DA9 {_$L12}
+                        _$L14:
+                        ; :: key.c #48: if ( key != key_hold 
+08D5D: 7B 01                ld      A, (1, SP)
+08D5F: C1 00 5B             cp      A, 0x5B {KEY_scan_$1_key_hold}
+                        _$L37:
+08D62: 27 02                jreq    0x8D66 {_$L22}
+                        _$L38:
+                        ; :: key.c #49: KEY_stat = KEY_IDLE
+08D64: 3F 06                clr     0x6 {KEY_stat}
+                        _$L22:
+                        ; :: key.c #51: if ( TMR0_Elapsed (key_time) >= 10 
+08D66: BE 11                ldw     X, 0x11 {Timer0}
+08D68: 72 B0 00 5C          subw    X, 0x5C {KEY_scan_$2_key_time}
+08D6C: 1F 02                ldw     (2, SP), X
+08D6E: A3 00 0A             cpw     X, #0xA
+08D71: 25 36                jrc     0x8DA9 {_$L12}
+                        ; :: key.c #53: KEY_val  = key
+08D73: 7B 01                ld      A, (1, SP)
+08D75: B7 07                ld      0x7 {KEY_val}, A
+                        ; :: key.c #54: KEY_stat = KEY_WAIT1
+08D77: 35 02 00 06          mov     0x6 {KEY_stat}, #0x2
+                        ; :: key.c #56: break
+08D7B: 20 2C                jra     0x8DA9 {_$L12}
+                        _$L15:
+                        ; :: key.c #59: if ( key == 0 
+08D7D: 7B 01                ld      A, (1, SP)
+08D7F: 26 28                jrne    0x8DA9 {_$L12}
+                        ; :: key.c #61: key_time = Timer0
+08D81: BE 11                ldw     X, 0x11 {Timer0}
+08D83: CF 00 5C             ldw     0x5C {KEY_scan_$2_key_time}, X
+                        ; :: key.c #62: KEY_stat = KEY_WAIT2
+08D86: 35 03 00 06          mov     0x6 {KEY_stat}, #0x3
+                        ; :: key.c #64: break
+08D8A: 20 1D                jra     0x8DA9 {_$L12}
+                        _$L16:
+                        ; :: key.c #67: if ( key 
+08D8C: 7B 01                ld      A, (1, SP)
+08D8E: 27 06                jreq    0x8D96 {_$L31}
+                        ; :: key.c #69: KEY_stat = KEY_WAIT1
+08D90: 35 02 00 06          mov     0x6 {KEY_stat}, #0x2
+08D94: 20 13                jra     0x8DA9 {_$L12}
+                        _$L31:
+                        ; :: key.c #71: else if ( TMR0_Elapsed(key_time) >= 10 
+08D96: BE 11                ldw     X, 0x11 {Timer0}
+08D98: 72 B0 00 5C          subw    X, 0x5C {KEY_scan_$2_key_time}
+08D9C: 1F 02                ldw     (2, SP), X
+08D9E: A3 00 0A             cpw     X, #0xA
+08DA1: 25 06                jrc     0x8DA9 {_$L12}
+                        ; :: key.c #73: KEY_stat = KEY_IDLE
+08DA3: 3F 06                clr     0x6 {KEY_stat}
+                        ; :: key.c #75: break
+08DA5: 20 02                jra     0x8DA9 {_$L12}
+                        _$L17:
+                        ; :: key.c #78: KEY_stat = KEY_IDLE
+08DA7: 3F 06                clr     0x6 {KEY_stat}
+                        _$L12:
+08DA9: 5B 03                add     SP, #0x3
+08DAB: 81                   ret
+                        (key.obj line#119, 13 bytes)
+                        KEY_get::
+08DAC: 88                   push    A
+08DAD: B6 07                ld      A, 0x7 {KEY_val}
+08DAF: 6B 01                ld      (1, SP), A
+                        ; :: key.c #86: KEY_val = 0
+08DB1: 3F 07                clr     0x7 {KEY_val}
+                        ; :: key.c #87: return tmp
+08DB3: 7B 01                ld      A, (1, SP)
+08DB5: B7 00                ld      0x0, A
+08DB7: 84                   pop     A
+08DB8: 81                   ret
+                        (vs1011.obj line#7, 15 bytes)
+                        VS1011_init::
+                        ; :: vs1011.c #17: VS1011_wrReg (VS1011_REG_MODE, 0x0802)
+08DB9: 52 03                sub     SP, #0x3
+08DBB: 0F 01                clr     (1, SP)
+08DBD: AE 08 02             ldw     X, #0x802
+08DC0: 1F 02                ldw     (2, SP), X
+08DC2: CD 8E 35             call    0x8E35 {VS1011_wrReg}
+08DC5: 5B 03                add     SP, #0x3
+08DC7: 81                   ret
+                        (vs1011.obj line#12, 25 bytes)
+                        VS1011_reset::
+                        _$L3:
+                        ; :: vs1011.c #24: while ( VS1011_BUSY 
+08DC8: 72 0B 50 06 FB       btjf    0x5006, #5, 0x8DC8 {VS1011_reset}
+                        ; :: vs1011.c #24: 
+                        ; :: vs1011.c #26: VS1011_wrReg (VS1011_REG_MODE, 0x0802 | 4)
+08DCD: 52 03                sub     SP, #0x3
+08DCF: 0F 01                clr     (1, SP)
+08DD1: AE 08 06             ldw     X, #0x806
+08DD4: 1F 02                ldw     (2, SP), X
+08DD6: CD 8E 35             call    0x8E35 {VS1011_wrReg}
+08DD9: 5B 03                add     SP, #0x3
+                        _$L6:
+                        ; :: vs1011.c #28: while ( VS1011_BUSY 
+08DDB: 72 0B 50 06 FB       btjf    0x5006, #5, 0x8DDB {_$L6}
+                        ; :: vs1011.c #28: 
+08DE0: 81                   ret
+                        (vs1011.obj line#25, 34 bytes)
+                        VS1011_setVol::
+08DE1: 89                   pushw   X
+                        ; :: vs1011.c #34: vs1011_vol_reg = val
+08DE2: 7B 05                ld      A, (5, SP)
+08DE4: B7 08                ld      0x8 {vs1011_vol_reg}, A
+                        ; :: vs1011.c #35: VS1011_wrReg (VS1011_REG_VOL, val | (val << 8))
+08DE6: 52 03                sub     SP, #0x3
+08DE8: A6 0B                ld      A, #0xB
+08DEA: 6B 01                ld      (1, SP), A
+08DEC: 0F 05                clr     (5, SP)
+08DEE: 7B 08                ld      A, (8, SP)
+08DF0: 6B 04                ld      (4, SP), A
+08DF2: 7B 05                ld      A, (5, SP)
+08DF4: 1A 08                or      A, (8, SP)
+08DF6: 6B 05                ld      (5, SP), A
+08DF8: 1E 04                ldw     X, (4, SP)
+08DFA: 1F 02                ldw     (2, SP), X
+08DFC: CD 8E 35             call    0x8E35 {VS1011_wrReg}
+08DFF: 5B 03                add     SP, #0x3
+08E01: 85                   popw    X
+08E02: 81                   ret
+                        (vs1011.obj line#33, 24 bytes)
+                        VS1011_incVol::
+                        ; :: vs1011.c #41: if ( vs1011_vol_reg >= 5 
+08E03: B6 08                ld      A, 0x8 {vs1011_vol_reg}
+08E05: A0 05                sub     A, #0x5
+08E07: 25 08                jrc     0x8E11 {_$L12}
+                        ; :: vs1011.c #42: vs1011_vol_reg -= 5
+08E09: B6 08                ld      A, 0x8 {vs1011_vol_reg}
+08E0B: AB FB                add     A, #0xFB
+08E0D: B7 08                ld      0x8 {vs1011_vol_reg}, A
+08E0F: 20 02                jra     0x8E13 {_$L13}
+                        _$L12:
+                        ; :: vs1011.c #44: else		vs1011_vol_reg = 0
+08E11: 3F 08                clr     0x8 {vs1011_vol_reg}
+                        _$L13:
+                        ; :: vs1011.c #46: VS1011_setVol (vs1011_vol_reg)
+08E13: 3B 00 08             push    0x8 {vs1011_vol_reg}
+08E16: CD 8D E1             call    0x8DE1 {VS1011_setVol}
+08E19: 84                   pop     A
+08E1A: 81                   ret
+                        (vs1011.obj line#47, 26 bytes)
+                        VS1011_decVol::
+                        ; :: vs1011.c #52: if ( vs1011_vol_reg <= 95 
+08E1B: B6 08                ld      A, 0x8 {vs1011_vol_reg}
+08E1D: A0 5F                sub     A, #0x5F
+08E1F: 22 08                jrugt   0x8E29 {_$L16}
+                        ; :: vs1011.c #53: vs1011_vol_reg += 5
+08E21: B6 08                ld      A, 0x8 {vs1011_vol_reg}
+08E23: AB 05                add     A, #0x5
+08E25: B7 08                ld      0x8 {vs1011_vol_reg}, A
+08E27: 20 04                jra     0x8E2D {_$L17}
+                        _$L16:
+                        ; :: vs1011.c #55: else		vs1011_vol_reg = 100
+08E29: 35 64 00 08          mov     0x8 {vs1011_vol_reg}, #0x64
+                        _$L17:
+                        ; :: vs1011.c #57: VS1011_setVol (vs1011_vol_reg)
+08E2D: 3B 00 08             push    0x8 {vs1011_vol_reg}
+08E30: CD 8D E1             call    0x8DE1 {VS1011_setVol}
+08E33: 84                   pop     A
+08E34: 81                   ret
+                        (vs1011.obj line#61, 63 bytes)
+                        VS1011_wrReg::
+08E35: 88                   push    A
+                        _$L19:
+                        ; :: vs1011.c #63: while ( VS1011_BUSY 
+08E36: 72 0B 50 06 FB       btjf    0x5006, #5, 0x8E36 {_$L19}
+                        ; :: vs1011.c #63: ; ; :: vs1011.c #64: SD_SCK_HOLD
+08E3B: 72 1D 50 0A          bres    0x500A, #6
+08E3F: 72 1C 50 0C          bset    0x500C, #6
+                        ; :: vs1011.c #65: ENABLE_SPI2()
+08E43: CD 82 C3             call    0x82C3 {ENABLE_SPI2}
+                        ; :: vs1011.c #67: VS1011_ENABLE_INST
+08E46: 72 13 50 05          bres    0x5005, #1
+                        ; :: vs1011.c #69: SPI2_write (VS1011_WR)
+08E4A: 4B 02                push    #0x2
+08E4C: CD 82 D1             call    0x82D1 {SPI2_write}
+08E4F: 84                   pop     A
+                        ; :: vs1011.c #70: SPI2_write (reg)
+08E50: 7B 04                ld      A, (4, SP)
+08E52: 88                   push    A
+08E53: CD 82 D1             call    0x82D1 {SPI2_write}
+08E56: 84                   pop     A
+                        ; :: vs1011.c #72: SPI2_write (data >> 8)
+08E57: 7B 05                ld      A, (5, SP)
+08E59: 6B 01                ld      (1, SP), A
+08E5B: 88                   push    A
+08E5C: CD 82 D1             call    0x82D1 {SPI2_write}
+08E5F: 84                   pop     A
+                        ; :: vs1011.c #73: SPI2_write (data)
+08E60: 7B 06                ld      A, (6, SP)
+08E62: 88                   push    A
+08E63: CD 82 D1             call    0x82D1 {SPI2_write}
+08E66: 84                   pop     A
+                        ; :: vs1011.c #75: VS1011_DISABLE_INST
+08E67: 72 12 50 05          bset    0x5005, #1
+                        ; :: vs1011.c #76: DISABLE_SPI2()
+08E6B: CD 82 CC             call    0x82CC {DISABLE_SPI2}
+                        ; :: vs1011.c #77: SD_SCK_UNHOLD
+08E6E: 72 1D 50 0C          bres    0x500C, #6
+08E72: 84                   pop     A
+08E73: 81                   ret
+                        (play.obj line#10, 57 bytes)
+                        PLAY_init::
+08E74: 52 04                sub     SP, #0x4
+                        ; :: play.c #15: PLAY_ctrlBlk.fileDesc  = file_desc
+08E76: 1E 07                ldw     X, (7, SP)
+08E78: BF 0F                ldw     0xF, X
+                        ; :: play.c #16: PLAY_ctrlBlk.secRemain = (file_desc->size + 511) >> 9
+08E7A: 1E 07                ldw     X, (7, SP)
+08E7C: E6 03                ld      A, (3, X)
+08E7E: AB FF                add     A, #0xFF
+08E80: 6B 04                ld      (4, SP), A
+08E82: E6 02                ld      A, (2, X)
+08E84: A9 01                adc     A, #0x1
+08E86: 6B 03                ld      (3, SP), A
+08E88: E6 01                ld      A, (1, X)
+08E8A: A9 00                adc     A, #0x0
+08E8C: 6B 02                ld      (2, SP), A
+08E8E: F6                   ld      A, (X)
+08E8F: A9 00                adc     A, #0x0
+08E91: 6B 01                ld      (1, SP), A
+08E93: 7B 03                ld      A, (3, SP)
+08E95: B7 0D                ld      0xD, A
+08E97: 7B 02                ld      A, (2, SP)
+08E99: B7 0C                ld      0xC, A
+08E9B: 7B 01                ld      A, (1, SP)
+08E9D: B7 0B                ld      0xB, A
+08E9F: 4F                   clr     A
+08EA0: B7 0A                ld      0xA {PLAY_ctrlBlk}, A
+08EA2: 34 0B                srl     0xB
+08EA4: 36 0C                rrc     0xC
+08EA6: 36 0D                rrc     0xD
+                        ; :: play.c #17: PLAY_ctrlBlk.inPlay    = 0
+08EA8: 3F 0E                clr     0xE
+08EAA: 5B 04                add     SP, #0x4
+08EAC: 81                   ret
+                        (play.obj line#23, 139 bytes)
+                        PLAY_music::
+08EAD: 89                   pushw   X
+08EAE: CE 00 0F             ldw     X, 0xF
+08EB1: E6 0D                ld      A, (13, X)
+08EB3: 6B 01                ld      (1, SP), A
+                        _$L3:
+                        ; :: play.c #28: if ( PLAY_ctrlBlk.inPlay && segment >= (MMC_SECTOR_SIZE/SEGMENT_SIZE) 
+08EB5: B6 0E                ld      A, 0xE
+08EB7: 27 3E                jreq    0x8EF7 {_$L7}
+08EB9: 7B 01                ld      A, (1, SP)
+08EBB: A0 10                sub     A, #0x10
+08EBD: 25 38                jrc     0x8EF7 {_$L7}
+                        ; :: play.c #30: PLAY_ctrlBlk.secRemain--
+08EBF: BE 0C                ldw     X, 0xC
+08EC1: 1C FF FF             addw    X, #0xFFFF
+08EC4: BF 0C                ldw     0xC, X
+08EC6: BE 0A                ldw     X, 0xA {PLAY_ctrlBlk}
+08EC8: 24 01                jrnc    0x8ECB
+08ECA: 5C                   incw    X
+08ECB: 5A                   decw    X
+08ECC: BF 0A                ldw     0xA {PLAY_ctrlBlk}, X
+                        ; :: play.c #32: if ( PLAY_ctrlBlk.secRemain == 0 
+08ECE: B6 0D                ld      A, 0xD
+08ED0: BA 0C                or      A, 0xC
+08ED2: BA 0B                or      A, 0xB
+08ED4: BA 0A                or      A, 0xA {PLAY_ctrlBlk}
+08ED6: 26 09                jrne    0x8EE1 {_$L11}
+                        ; :: play.c #35: PLAY_fade_out()
+08ED8: CD 8F 38             call    0x8F38 {PLAY_fade_out}
+                        ; :: play.c #36: return PLAY_DONE
+08EDB: 35 01 00 00          mov     0x0, #0x1
+08EDF: 20 55                jra     0x8F36 {_$L2}
+                        _$L11:
+                        ; :: play.c #39: ( !FILE_nextFileSector(PLAY_ctrlBlk.fileDesc) 
+08EE1: BE 0F                ldw     X, 0xF
+08EE3: 89                   pushw   X
+08EE4: CD 8C 5B             call    0x8C5B {FILE_nextFileSector}
+08EE7: 85                   popw    X
+08EE8: B6 00                ld      A, 0x0
+08EEA: 26 09                jrne    0x8EF5 {_$L14}
+                        ; :: play.c #41: PLAY_fade_out()
+08EEC: CD 8F 38             call    0x8F38 {PLAY_fade_out}
+                        ; :: play.c #42: return PLAY_ERR
+08EEF: 35 FF 00 00          mov     0x0, #0xFF
+08EF3: 20 41                jra     0x8F36 {_$L2}
+                        _$L14:
+                        ; :: play.c #45: = 0
+08EF5: 0F 01                clr     (1, SP)
+                        _$L7:
+                        ; :: play.c #48: ( !VS1011_BUSY 
+08EF7: 72 0B 50 06 26       btjf    0x5006, #5, 0x8F22 {_$L17}
+                        ; :: play.c #50: if ( !PLAY_ctrlBlk.inPlay 
+08EFC: B6 0E                ld      A, 0xE
+08EFE: 26 15                jrne    0x8F15 {_$L20}
+                        ; :: play.c #53: if ( !FILE_nextFileSector (PLAY_ctrlBlk.fileDesc) 
+08F00: BE 0F                ldw     X, 0xF
+08F02: 89                   pushw   X
+08F03: CD 8C 5B             call    0x8C5B {FILE_nextFileSector}
+08F06: 85                   popw    X
+08F07: B6 00                ld      A, 0x0
+08F09: 26 06                jrne    0x8F11 {_$L23}
+                        ; :: play.c #54: return PLAY_ERR
+08F0B: 35 FF 00 00          mov     0x0, #0xFF
+08F0F: 20 25                jra     0x8F36 {_$L2}
+                        _$L23:
+                        ; :: play.c #56: .inPlay = 1
+08F11: 35 01 00 0E          mov     0xE, #0x1
+                        _$L20:
+                        ; :: play.c #59: (segment++)
+08F15: 7B 01                ld      A, (1, SP)
+08F17: 6B 02                ld      (2, SP), A
+08F19: 0C 01                inc     (1, SP)
+08F1B: 7B 02                ld      A, (2, SP)
+08F1D: 88                   push    A
+08F1E: CD 92 97             call    0x9297 {MMC_dumpSegment}
+08F21: 84                   pop     A
+                        _$L17:
+                        ; :: play.c #62: while ( !VS1011_BUSY || segment >= (MMC_SECTOR_SIZE/SEGMENT_SIZE) 
+08F22: 72 0A 50 06 8E       btjt    0x5006, #5, 0x8EB5 {_$L3}
+08F27: 7B 01                ld      A, (1, SP)
+08F29: A0 10                sub     A, #0x10
+08F2B: 24 88                jrnc    0x8EB5 {_$L3}
+                        ; :: play.c #64: PLAY_ctrlBlk.fileDesc->segment = segment
+08F2D: CE 00 0F             ldw     X, 0xF
+08F30: 7B 01                ld      A, (1, SP)
+08F32: E7 0D                ld      (13, X), A
+                        ; :: play.c #65: return PLAY_RUN
+08F34: 3F 00                clr     0x0
+                        _$L2:
+08F36: 85                   popw    X
+08F37: 81                   ret
+                        (play.obj line#85, 49 bytes)
+                        PLAY_fade_out::
+08F38: 88                   push    A
+08F39: 0F 01                clr     (1, SP)
+                        ; :: play.c #73: SD_SCK_HOLD
+08F3B: 72 1D 50 0A          bres    0x500A, #6
+08F3F: 72 1C 50 0C          bset    0x500C, #6
+                        ; :: play.c #75: ENABLE_SPI2()
+08F43: CD 82 C3             call    0x82C3 {ENABLE_SPI2}
+                        ; :: play.c #76: VS1011_ENABLE_DATA
+08F46: 72 17 50 05          bres    0x5005, #3
+                        _$L27:
+                        ; :: play.c #80: while ( VS1011_BUSY 
+08F4A: 72 0B 50 06 FB       btjf    0x5006, #5, 0x8F4A {_$L27}
+                        ; :: play.c #80: ; ; :: play.c #81: SPI2_write(0)
+08F4F: 4B 00                push    #0x0
+08F51: CD 82 D1             call    0x82D1 {SPI2_write}
+08F54: 84                   pop     A
+                        ; :: play.c #82: while ( --n 
+08F55: 0A 01                dec     (1, SP)
+08F57: 26 F1                jrne    0x8F4A {_$L27}
+                        ; :: play.c #84: VS1011_DISABLE_DATA
+08F59: 72 16 50 05          bset    0x5005, #3
+                        ; :: play.c #86: DISABLE_SPI2()
+08F5D: CD 82 CC             call    0x82CC {DISABLE_SPI2}
+                        ; :: play.c #87: SD_SCK_UNHOLD
+08F60: 72 1D 50 0C          bres    0x500C, #6
+                        ; :: play.c #89: VS1011_reset()
+08F64: CD 8D C8             call    0x8DC8 {VS1011_reset}
+08F67: 84                   pop     A
+08F68: 81                   ret
+                        (mmcspi.obj line#4, 222 bytes)
+                        MMC_ExecCmd:
+08F69: 52 09                sub     SP, #0x9
+                        ; :: mmcspi.c #41: loop = 0
+08F6B: 0F 04                clr     (4, SP)
+                        _$L2:
+                        ; :: mmcspi.c #44: ret = 0x00
+08F6D: 0F 02                clr     (2, SP)
+                        ; :: mmcspi.c #45: crc = 0xff
+08F6F: A6 FF                ld      A, #0xFF
+08F71: 6B 03                ld      (3, SP), A
+                        ; :: mmcspi.c #47: if ( cmd == GO_IDLE_STATE 
+08F73: 7B 0C                ld      A, (12, SP)
+08F75: 26 21                jrne    0x8F98 {_$L10}
+                        ; :: mmcspi.c #49: ret = 0x01
+08F77: A6 01                ld      A, #0x1
+08F79: 6B 02                ld      (2, SP), A
+                        ; :: mmcspi.c #50: crc = 0x95
+08F7B: A6 95                ld      A, #0x95
+08F7D: 6B 03                ld      (3, SP), A
+                        ; :: mmcspi.c #51: DISABLE_SD_CARD
+08F7F: 72 18 50 00          bset    0x5000, #4
+                        ; :: mmcspi.c #53: for (cnt = 300
+08F83: AE 01 2C             ldw     X, #0x12C
+08F86: 1F 05                ldw     (5, SP), X
+                        _$L8:
+                        ; :: mmcspi.c #53: cnt--
+08F88: 1E 05                ldw     X, (5, SP)
+08F8A: 5A                   decw    X
+08F8B: 1F 05                ldw     (5, SP), X
+08F8D: 5C                   incw    X
+08F8E: 27 08                jreq    0x8F98 {_$L10}
+                        ; :: mmcspi.c #54: SPI_write (0xff)
+08F90: 4B FF                push    #0xFF
+08F92: CD 82 7D             call    0x827D {SPI_write}
+08F95: 84                   pop     A
+08F96: 20 F0                jra     0x8F88 {_$L8}
+                        _$L10:
+                        ; :: mmcspi.c #57: 
+08F98: 72 19 50 00          bres    0x5000, #4
+08F9C: 96                   ldw     X, SP
+08F9D: 1C 00 0D             addw    X, #0xD
+08FA0: 1F 07                ldw     (7, SP), X
+                        ; :: mmcspi.c #59: SPI_write(cmd | 0x40)
+08FA2: 7B 0C                ld      A, (12, SP)
+08FA4: AA 40                or      A, #0x40
+08FA6: 6B 09                ld      (9, SP), A
+08FA8: 88                   push    A
+08FA9: CD 82 7D             call    0x827D {SPI_write}
+08FAC: 84                   pop     A
+                        ; :: mmcspi.c #60: SPI_write(p[0])
+08FAD: 1E 07                ldw     X, (7, SP)
+08FAF: F6                   ld      A, (X)
+08FB0: 88                   push    A
+08FB1: CD 82 7D             call    0x827D {SPI_write}
+08FB4: 84                   pop     A
+                        ; :: mmcspi.c #61: SPI_write(p[1])
+08FB5: 1E 07                ldw     X, (7, SP)
+08FB7: E6 01                ld      A, (1, X)
+08FB9: 88                   push    A
+08FBA: CD 82 7D             call    0x827D {SPI_write}
+08FBD: 84                   pop     A
+                        ; :: mmcspi.c #62: SPI_write(p[2])
+08FBE: 1E 07                ldw     X, (7, SP)
+08FC0: E6 02                ld      A, (2, X)
+08FC2: 88                   push    A
+08FC3: CD 82 7D             call    0x827D {SPI_write}
+08FC6: 84                   pop     A
+                        ; :: mmcspi.c #63: SPI_write(p[3])
+08FC7: 1E 07                ldw     X, (7, SP)
+08FC9: E6 03                ld      A, (3, X)
+08FCB: 88                   push    A
+08FCC: CD 82 7D             call    0x827D {SPI_write}
+08FCF: 84                   pop     A
+                        ; :: mmcspi.c #64: SPI_write(crc)
+08FD0: 7B 03                ld      A, (3, SP)
+08FD2: 88                   push    A
+08FD3: CD 82 7D             call    0x827D {SPI_write}
+08FD6: 84                   pop     A
+                        ; :: mmcspi.c #66: cnt = 1000
+08FD7: AE 03 E8             ldw     X, #0x3E8
+08FDA: 1F 05                ldw     (5, SP), X
+                        _$L12:
+                        ; :: mmcspi.c #67: while ( SPI_read() != ret && cnt 
+08FDC: CD 82 9F             call    0x829F {SPI_read}
+08FDF: B6 00                ld      A, 0x0
+08FE1: 11 02                cp      A, (2, SP)
+                        _$L101:
+08FE3: 27 0B                jreq    0x8FF0 {_$L14}
+                        _$L102:
+08FE5: 1E 05                ldw     X, (5, SP)
+08FE7: 27 07                jreq    0x8FF0 {_$L14}
+                        ; :: mmcspi.c #67: cnt--
+08FE9: 1E 05                ldw     X, (5, SP)
+08FEB: 5A                   decw    X
+08FEC: 1F 05                ldw     (5, SP), X
+08FEE: 20 EC                jra     0x8FDC {_$L12}
+                        _$L14:
+                        ; :: mmcspi.c #69: stat = MMC_ERR
+08FF0: A6 06                ld      A, #0x6
+08FF2: 6B 01                ld      (1, SP), A
+                        ; :: mmcspi.c #70: if ( cnt 
+08FF4: 1E 05                ldw     X, (5, SP)
+08FF6: 27 2F                jreq    0x9027 {_$L28}
+                        ; :: mmcspi.c #72: stat = MMC_OK
+08FF8: 0F 01                clr     (1, SP)
+                        ; :: mmcspi.c #74: if ( cmd == READ_SINGLE_BLOCK 
+08FFA: 7B 0C                ld      A, (12, SP)
+08FFC: A1 11                cp      A, #0x11
+                        _$L103:
+08FFE: 26 27                jrne    0x9027 {_$L28}
+                        _$L104:
+                        ; :: mmcspi.c #76: cnt = 1000
+09000: AE 03 E8             ldw     X, #0x3E8
+09003: 1F 05                ldw     (5, SP), X
+                        _$L22:
+                        ; :: mmcspi.c #77: while ( SPI_read () != 0xfe && cnt 
+09005: CD 82 9F             call    0x829F {SPI_read}
+09008: B6 00                ld      A, 0x0
+0900A: A1 FE                cp      A, #0xFE
+                        _$L105:
+0900C: 27 0B                jreq    0x9019 {_$L24}
+                        _$L106:
+0900E: 1E 05                ldw     X, (5, SP)
+09010: 27 07                jreq    0x9019 {_$L24}
+                        ; :: mmcspi.c #77: cnt--
+09012: 1E 05                ldw     X, (5, SP)
+09014: 5A                   decw    X
+09015: 1F 05                ldw     (5, SP), X
+09017: 20 EC                jra     0x9005 {_$L22}
+                        _$L24:
+                        ; :: mmcspi.c #79: if ( cnt == 0 
+09019: 1E 05                ldw     X, (5, SP)
+0901B: 26 06                jrne    0x9023 {_$L27}
+                        ; :: mmcspi.c #80: stat = MMC_ERR
+0901D: A6 06                ld      A, #0x6
+0901F: 6B 01                ld      (1, SP), A
+09021: 20 04                jra     0x9027 {_$L28}
+                        _$L27:
+                        ; :: mmcspi.c #82: else					return MMC_OK
+09023: 3F 00                clr     0x0
+09025: 20 1D                jra     0x9044 {_$L1}
+                        _$L28:
+                        ; :: mmcspi.c #86: 
+09027: 72 18 50 00          bset    0x5000, #4
+                        ; :: mmcspi.c #87: SPI_write (0xff)
+0902B: 4B FF                push    #0xFF
+0902D: CD 82 7D             call    0x827D {SPI_write}
+09030: 84                   pop     A
+                        ; :: mmcspi.c #88: ++loop
+09031: 0C 04                inc     (4, SP)
+                        ; :: mmcspi.c #89: while ( stat != MMC_OK && loop < 5 
+09033: 7B 01                ld      A, (1, SP)
+09035: 27 09                jreq    0x9040 {_$L4}
+09037: 7B 04                ld      A, (4, SP)
+09039: A0 05                sub     A, #0x5
+0903B: 24 03                jrnc    0x9040 {_$L4}
+0903D: CC 8F 6D             jp      0x8F6D {_$L2}
+                        _$L4:
+                        ; :: mmcspi.c #91: return stat
+09040: 7B 01                ld      A, (1, SP)
+09042: B7 00                ld      0x0, A
+                        _$L1:
+09044: 5B 09                add     SP, #0x9
+09046: 81                   ret
+                        (mmcspi.obj line#114, 75 bytes)
+                        MMC_Init::
+09047: 88                   push    A
+                        ; :: mmcspi.c #99: if ( MMC_ExecCmd(GO_IDLE_STATE, 0) != MMC_OK ||          MMC_ExecCmd(SEND_OP_COND,  0) != MMC_OK 
+09048: 52 05                sub     SP, #0x5
+0904A: 0F 01                clr     (1, SP)
+0904C: 0F 05                clr     (5, SP)
+0904E: 0F 04                clr     (4, SP)
+09050: 0F 03                clr     (3, SP)
+09052: 0F 02                clr     (2, SP)
+09054: CD 8F 69             call    0x8F69 {MMC_ExecCmd}
+09057: 5B 05                add     SP, #0x5
+09059: B6 00                ld      A, 0x0
+0905B: 6B 01                ld      (1, SP), A
+0905D: 26 17                jrne    0x9076 {_$L31}
+0905F: 52 05                sub     SP, #0x5
+09061: A6 01                ld      A, #0x1
+09063: 6B 01                ld      (1, SP), A
+09065: 0F 05                clr     (5, SP)
+09067: 0F 04                clr     (4, SP)
+09069: 0F 03                clr     (3, SP)
+0906B: 0F 02                clr     (2, SP)
+0906D: CD 8F 69             call    0x8F69 {MMC_ExecCmd}
+09070: 5B 05                add     SP, #0x5
+09072: B6 00                ld      A, 0x0
+09074: 27 06                jreq    0x907C {_$L32}
+                        _$L31:
+                        ; :: mmcspi.c #101: return MMC_NO_RESP
+09076: 35 04 00 00          mov     0x0, #0x4
+0907A: 20 14                jra     0x9090 {_$L30}
+                        _$L32:
+                        ; :: mmcspi.c #104: MMC_ExecCmd(SET_BLOCKLEN, 512)
+0907C: 52 05                sub     SP, #0x5
+0907E: A6 10                ld      A, #0x10
+09080: 6B 01                ld      (1, SP), A
+09082: 0F 05                clr     (5, SP)
+09084: AE 00 02             ldw     X, #0x2
+09087: 1F 03                ldw     (3, SP), X
+09089: 0F 02                clr     (2, SP)
+0908B: CD 8F 69             call    0x8F69 {MMC_ExecCmd}
+0908E: 5B 05                add     SP, #0x5
+                        _$L30:
+09090: 84                   pop     A
+09091: 81                   ret
+                        (mmcspi.obj line#139, 106 bytes)
+                        MMC_ReadSegment::
+09092: 52 07                sub     SP, #0x7
+                        ; :: mmcspi.c #117: if ( seg == 0 
+09094: 7B 0E                ld      A, (14, SP)
+09096: 26 38                jrne    0x90D0 {_$L41}
+                        ; :: mmcspi.c #119: DISABLE_SD_CARD
+09098: 72 18 50 00          bset    0x5000, #4
+                        ; :: mmcspi.c #120: if ( MMC_ExecCmd (READ_SINGLE_BLOCK, MMC_SECTOR_SIZE*sect) != MMC_OK 
+0909C: 52 05                sub     SP, #0x5
+0909E: A6 11                ld      A, #0x11
+090A0: 6B 01                ld      (1, SP), A
+090A2: 1E 11                ldw     X, (17, SP)
+090A4: 1F 0B                ldw     (11, SP), X
+090A6: 1E 0F                ldw     X, (15, SP)
+090A8: 1F 09                ldw     (9, SP), X
+090AA: 4B 00                push    #0x0
+090AC: 4B 02                push    #0x2
+090AE: 5F                   clrw    X
+090AF: 89                   pushw   X
+090B0: 96                   ldw     X, SP
+090B1: 1C 00 0D             addw    X, #0xD
+090B4: CD 93 35             call    0x9335 {_mul32Ptr}
+090B7: 5B 04                add     SP, #0x4
+090B9: 1E 0B                ldw     X, (11, SP)
+090BB: 1F 04                ldw     (4, SP), X
+090BD: 1E 09                ldw     X, (9, SP)
+090BF: 1F 02                ldw     (2, SP), X
+090C1: CD 8F 69             call    0x8F69 {MMC_ExecCmd}
+090C4: 5B 05                add     SP, #0x5
+090C6: B6 00                ld      A, 0x0
+090C8: 27 06                jreq    0x90D0 {_$L41}
+                        ; :: mmcspi.c #121: return MMC_ERR
+090CA: 35 06 00 00          mov     0x0, #0x6
+090CE: 20 29                jra     0x90F9 {_$L36}
+                        _$L41:
+090D0: AE 00 13             ldw     X, #0x13
+090D3: 1F 01                ldw     (1, SP), X
+090D5: A6 20                ld      A, #0x20
+090D7: 6B 03                ld      (3, SP), A
+                        _$L43:
+                        ; :: mmcspi.c #128: *buf++ = SPI_read ()
+090D9: 1E 01                ldw     X, (1, SP)
+090DB: 1F 04                ldw     (4, SP), X
+090DD: 1E 01                ldw     X, (1, SP)
+090DF: 5C                   incw    X
+090E0: 1F 01                ldw     (1, SP), X
+090E2: CD 82 9F             call    0x829F {SPI_read}
+090E5: 1E 04                ldw     X, (4, SP)
+090E7: B6 00                ld      A, 0x0
+090E9: F7                   ld      (X), A
+                        ; :: mmcspi.c #129: while ( --cnt 
+090EA: 0A 03                dec     (3, SP)
+090EC: 26 EB                jrne    0x90D9 {_$L43}
+                        ; :: mmcspi.c #132: if ( seg >= (MMC_SECTOR_SIZE/SEGMENT_SIZE - 1) 
+090EE: 7B 0E                ld      A, (14, SP)
+090F0: A0 0F                sub     A, #0xF
+090F2: 25 03                jrc     0x90F7 {_$L47}
+                        ; :: mmcspi.c #133: MMC_endAck ()
+090F4: CD 92 C1             call    0x92C1 {MMC_endAck}
+                        _$L47:
+                        ; :: mmcspi.c #135: MMC_OK
+090F7: 3F 00                clr     0x0
+                        _$L36:
+090F9: 5B 07                add     SP, #0x7
+090FB: 81                   ret
+                        (mmcspi.obj line#174, 86 bytes)
+                        MMC_SkipSegment::
+090FC: 52 04                sub     SP, #0x4
+                        ; :: mmcspi.c #141: if ( seg < (MMC_SECTOR_SIZE/SEGMENT_SIZE) 
+090FE: 7B 0B                ld      A, (11, SP)
+09100: A0 10                sub     A, #0x10
+09102: 24 49                jrnc    0x914D {_$L58}
+                        ; :: mmcspi.c #143: DISABLE_SD_CARD
+09104: 72 18 50 00          bset    0x5000, #4
+                        ; :: mmcspi.c #144: if ( MMC_ExecCmd (READ_SINGLE_BLOCK, MMC_SECTOR_SIZE*sect) != MMC_OK 
+09108: 52 05                sub     SP, #0x5
+0910A: A6 11                ld      A, #0x11
+0910C: 6B 01                ld      (1, SP), A
+0910E: 1E 0E                ldw     X, (14, SP)
+09110: 1F 08                ldw     (8, SP), X
+09112: 1E 0C                ldw     X, (12, SP)
+09114: 1F 06                ldw     (6, SP), X
+09116: 4B 00                push    #0x0
+09118: 4B 02                push    #0x2
+0911A: 5F                   clrw    X
+0911B: 89                   pushw   X
+0911C: 96                   ldw     X, SP
+0911D: 1C 00 0A             addw    X, #0xA
+09120: CD 93 35             call    0x9335 {_mul32Ptr}
+09123: 5B 04                add     SP, #0x4
+09125: 1E 08                ldw     X, (8, SP)
+09127: 1F 04                ldw     (4, SP), X
+09129: 1E 06                ldw     X, (6, SP)
+0912B: 1F 02                ldw     (2, SP), X
+0912D: CD 8F 69             call    0x8F69 {MMC_ExecCmd}
+09130: 5B 05                add     SP, #0x5
+09132: B6 00                ld      A, 0x0
+09134: 27 06                jreq    0x913C {_$L54}
+                        ; :: mmcspi.c #145: return MMC_ERR
+09136: 35 06 00 00          mov     0x0, #0x6
+0913A: 20 13                jra     0x914F {_$L49}
+                        _$L54:
+                        ; :: mmcspi.c #147: <<= 4
+0913C: A6 04                ld      A, #0x4
+                        _$L107:
+0913E: 08 0B                sll     (11, SP)
+09140: 4A                   dec     A
+09141: 26 FB                jrne    0x913E {_$L107}
+                        _$L56:
+                        ; :: mmcspi.c #150: SPI_read ()
+09143: CD 82 9F             call    0x829F {SPI_read}
+                        ; :: mmcspi.c #151: SPI_read ()
+09146: CD 82 9F             call    0x829F {SPI_read}
+                        ; :: mmcspi.c #152: while ( --seg 
+09149: 0A 0B                dec     (11, SP)
+0914B: 26 F6                jrne    0x9143 {_$L56}
+                        _$L58:
+                        ; :: mmcspi.c #154: MMC_OK
+0914D: 3F 00                clr     0x0
+                        _$L49:
+0914F: 5B 04                add     SP, #0x4
+09151: 81                   ret
+                        (mmcspi.obj line#208, 130 bytes)
+                        MMC_ReadSegOffset::
+09152: 52 0B                sub     SP, #0xB
+                        ; :: mmcspi.c #160: DISABLE_SD_CARD
+09154: 72 18 50 00          bset    0x5000, #4
+                        ; :: mmcspi.c #162: if ( MMC_ExecCmd (READ_SINGLE_BLOCK, MMC_SECTOR_SIZE*sect) != MMC_OK 
+09158: 52 05                sub     SP, #0x5
+0915A: A6 11                ld      A, #0x11
+0915C: 6B 01                ld      (1, SP), A
+0915E: 1E 15                ldw     X, (21, SP)
+09160: 1F 0F                ldw     (15, SP), X
+09162: 1E 13                ldw     X, (19, SP)
+09164: 1F 0D                ldw     (13, SP), X
+09166: 4B 00                push    #0x0
+09168: 4B 02                push    #0x2
+0916A: 5F                   clrw    X
+0916B: 89                   pushw   X
+0916C: 96                   ldw     X, SP
+0916D: 1C 00 11             addw    X, #0x11
+09170: CD 93 35             call    0x9335 {_mul32Ptr}
+09173: 5B 04                add     SP, #0x4
+09175: 1E 0F                ldw     X, (15, SP)
+09177: 1F 04                ldw     (4, SP), X
+09179: 1E 0D                ldw     X, (13, SP)
+0917B: 1F 02                ldw     (2, SP), X
+0917D: CD 8F 69             call    0x8F69 {MMC_ExecCmd}
+09180: 5B 05                add     SP, #0x5
+09182: B6 00                ld      A, 0x0
+09184: 27 06                jreq    0x918C {_$L61}
+                        ; :: mmcspi.c #163: return MMC_ERR
+09186: 35 06 00 00          mov     0x0, #0x6
+0918A: 20 45                jra     0x91D1 {_$L59}
+                        _$L61:
+0918C: AE 00 13             ldw     X, #0x13
+0918F: 1F 01                ldw     (1, SP), X
+09191: 0F 04                clr     (4, SP)
+09193: A6 02                ld      A, #0x2
+09195: 6B 03                ld      (3, SP), A
+09197: AE 00 20             ldw     X, #0x20
+0919A: 1F 05                ldw     (5, SP), X
+                        _$L63:
+0919C: CD 82 9F             call    0x829F {SPI_read}
+0919F: B6 00                ld      A, 0x0
+091A1: 6B 07                ld      (7, SP), A
+                        ; :: mmcspi.c #173: if ( offset 
+091A3: 1E 12                ldw     X, (18, SP)
+091A5: 27 07                jreq    0x91AE {_$L67}
+                        ; :: mmcspi.c #175: offset--
+091A7: 1E 12                ldw     X, (18, SP)
+091A9: 5A                   decw    X
+091AA: 1F 12                ldw     (18, SP), X
+091AC: 20 17                jra     0x91C5 {_$L70}
+                        _$L67:
+                        ; :: mmcspi.c #177: else if ( length 
+091AE: 1E 05                ldw     X, (5, SP)
+091B0: 27 13                jreq    0x91C5 {_$L70}
+                        ; :: mmcspi.c #179: length--
+091B2: 1E 05                ldw     X, (5, SP)
+091B4: 5A                   decw    X
+091B5: 1F 05                ldw     (5, SP), X
+                        ; :: mmcspi.c #180: *buf++ = data
+091B7: 1E 01                ldw     X, (1, SP)
+091B9: 1F 08                ldw     (8, SP), X
+091BB: 1E 01                ldw     X, (1, SP)
+091BD: 5C                   incw    X
+091BE: 1F 01                ldw     (1, SP), X
+091C0: 1E 08                ldw     X, (8, SP)
+091C2: 7B 07                ld      A, (7, SP)
+091C4: F7                   ld      (X), A
+                        _$L70:
+                        ; :: mmcspi.c #182: while ( --sect_size 
+091C5: 1E 03                ldw     X, (3, SP)
+091C7: 5A                   decw    X
+091C8: 1F 03                ldw     (3, SP), X
+091CA: 26 D0                jrne    0x919C {_$L63}
+                        ; :: mmcspi.c #184: MMC_endAck ()
+091CC: CD 92 C1             call    0x92C1 {MMC_endAck}
+                        ; :: mmcspi.c #185: return MMC_OK
+091CF: 3F 00                clr     0x0
+                        _$L59:
+091D1: 5B 0B                add     SP, #0xB
+091D3: 81                   ret
+                        (mmcspi.obj line#250, 122 bytes)
+                        MMC_ReadSegOffsetLength::
+091D4: 52 09                sub     SP, #0x9
+                        ; :: mmcspi.c #191: DISABLE_SD_CARD
+091D6: 72 18 50 00          bset    0x5000, #4
+                        ; :: mmcspi.c #193: if ( MMC_ExecCmd (READ_SINGLE_BLOCK, MMC_SECTOR_SIZE*sect) != MMC_OK 
+091DA: 52 05                sub     SP, #0x5
+091DC: A6 11                ld      A, #0x11
+091DE: 6B 01                ld      (1, SP), A
+091E0: 1E 13                ldw     X, (19, SP)
+091E2: 1F 0D                ldw     (13, SP), X
+091E4: 1E 11                ldw     X, (17, SP)
+091E6: 1F 0B                ldw     (11, SP), X
+091E8: 4B 00                push    #0x0
+091EA: 4B 02                push    #0x2
+091EC: 5F                   clrw    X
+091ED: 89                   pushw   X
+091EE: 96                   ldw     X, SP
+091EF: 1C 00 0F             addw    X, #0xF
+091F2: CD 93 35             call    0x9335 {_mul32Ptr}
+091F5: 5B 04                add     SP, #0x4
+091F7: 1E 0D                ldw     X, (13, SP)
+091F9: 1F 04                ldw     (4, SP), X
+091FB: 1E 0B                ldw     X, (11, SP)
+091FD: 1F 02                ldw     (2, SP), X
+091FF: CD 8F 69             call    0x8F69 {MMC_ExecCmd}
+09202: 5B 05                add     SP, #0x5
+09204: B6 00                ld      A, 0x0
+09206: 27 06                jreq    0x920E {_$L74}
+                        ; :: mmcspi.c #194: return MMC_ERR
+09208: 35 06 00 00          mov     0x0, #0x6
+0920C: 20 3D                jra     0x924B {_$L72}
+                        _$L74:
+0920E: AE 00 13             ldw     X, #0x13
+09211: 1F 01                ldw     (1, SP), X
+09213: 0F 04                clr     (4, SP)
+09215: A6 02                ld      A, #0x2
+09217: 6B 03                ld      (3, SP), A
+                        _$L76:
+09219: CD 82 9F             call    0x829F {SPI_read}
+0921C: B6 00                ld      A, 0x0
+0921E: 6B 05                ld      (5, SP), A
+                        ; :: mmcspi.c #203: if ( offset 
+09220: 1E 10                ldw     X, (16, SP)
+09222: 27 07                jreq    0x922B {_$L80}
+                        ; :: mmcspi.c #205: offset--
+09224: 1E 10                ldw     X, (16, SP)
+09226: 5A                   decw    X
+09227: 1F 10                ldw     (16, SP), X
+09229: 20 14                jra     0x923F {_$L83}
+                        _$L80:
+                        ; :: mmcspi.c #207: else if ( length 
+0922B: 7B 12                ld      A, (18, SP)
+0922D: 27 10                jreq    0x923F {_$L83}
+                        ; :: mmcspi.c #209: length--
+0922F: 0A 12                dec     (18, SP)
+                        ; :: mmcspi.c #210: *buf++ = data
+09231: 1E 01                ldw     X, (1, SP)
+09233: 1F 06                ldw     (6, SP), X
+09235: 1E 01                ldw     X, (1, SP)
+09237: 5C                   incw    X
+09238: 1F 01                ldw     (1, SP), X
+0923A: 1E 06                ldw     X, (6, SP)
+0923C: 7B 05                ld      A, (5, SP)
+0923E: F7                   ld      (X), A
+                        _$L83:
+                        ; :: mmcspi.c #212: while ( --sect_size 
+0923F: 1E 03                ldw     X, (3, SP)
+09241: 5A                   decw    X
+09242: 1F 03                ldw     (3, SP), X
+09244: 26 D3                jrne    0x9219 {_$L76}
+                        ; :: mmcspi.c #214: MMC_endAck ()
+09246: CD 92 C1             call    0x92C1 {MMC_endAck}
+                        ; :: mmcspi.c #215: return MMC_OK
+09249: 3F 00                clr     0x0
+                        _$L72:
+0924B: 5B 09                add     SP, #0x9
+0924D: 81                   ret
+                        (mmcspi.obj line#291, 73 bytes)
+                        MMC_NextSector::
+0924E: 52 04                sub     SP, #0x4
+                        ; :: mmcspi.c #221: DISABLE_SD_CARD
+09250: 72 18 50 00          bset    0x5000, #4
+                        ; :: mmcspi.c #223: if ( MMC_ExecCmd (READ_SINGLE_BLOCK, MMC_SECTOR_SIZE*sector) == MMC_OK 
+09254: 52 05                sub     SP, #0x5
+09256: A6 11                ld      A, #0x11
+09258: 6B 01                ld      (1, SP), A
+0925A: 1E 0E                ldw     X, (14, SP)
+0925C: 1F 08                ldw     (8, SP), X
+0925E: 1E 0C                ldw     X, (12, SP)
+09260: 1F 06                ldw     (6, SP), X
+09262: 4B 00                push    #0x0
+09264: 4B 02                push    #0x2
+09266: 5F                   clrw    X
+09267: 89                   pushw   X
+09268: 96                   ldw     X, SP
+09269: 1C 00 0A             addw    X, #0xA
+0926C: CD 93 35             call    0x9335 {_mul32Ptr}
+0926F: 5B 04                add     SP, #0x4
+09271: 1E 08                ldw     X, (8, SP)
+09273: 1F 04                ldw     (4, SP), X
+09275: 1E 06                ldw     X, (6, SP)
+09277: 1F 02                ldw     (2, SP), X
+09279: CD 8F 69             call    0x8F69 {MMC_ExecCmd}
+0927C: 5B 05                add     SP, #0x5
+0927E: B6 00                ld      A, 0x0
+09280: 26 04                jrne    0x9286 {_$L87}
+                        ; :: mmcspi.c #224: return MMC_OK
+09282: 3F 00                clr     0x0
+09284: 20 0E                jra     0x9294 {_$L85}
+                        _$L87:
+                        ; :: mmcspi.c #226: 
+09286: 72 18 50 00          bset    0x5000, #4
+                        ; :: mmcspi.c #228: SPI_write (0xff)
+0928A: 4B FF                push    #0xFF
+0928C: CD 82 7D             call    0x827D {SPI_write}
+0928F: 84                   pop     A
+                        ; :: mmcspi.c #229: return MMC_ERR
+09290: 35 06 00 00          mov     0x0, #0x6
+                        _$L85:
+09294: 5B 04                add     SP, #0x4
+09296: 81                   ret
+                        (mmcspi.obj line#313, 21 bytes)
+                        MMC_dumpSegment::
+                        ; :: mmcspi.c #235: VS1011_ENABLE_DATA
+09297: 72 17 50 05          bres    0x5005, #3
+                        ; :: mmcspi.c #236: SPI_burst()
+0929B: CD 82 F2             call    0x82F2 {SPI_burst}
+                        ; :: mmcspi.c #237: VS1011_DISABLE_DATA
+0929E: 72 16 50 05          bset    0x5005, #3
+                        ; :: mmcspi.c #240: if ( seg >= (MMC_SECTOR_SIZE/SEGMENT_SIZE-1) 
+092A2: 7B 03                ld      A, (3, SP)
+092A4: A0 0F                sub     A, #0xF
+092A6: 25 03                jrc     0x92AB {_$L91}
+                        ; :: mmcspi.c #241: MMC_endAck ()
+092A8: CD 92 C1             call    0x92C1 {MMC_endAck}
+                        _$L91:
+092AB: 81                   ret
+                        (mmcspi.obj line#328, 21 bytes)
+                        MMC_flushSector::
+                        ; :: mmcspi.c #247: if ( seg >= (MMC_SECTOR_SIZE/SEGMENT_SIZE) 
+092AC: 7B 03                ld      A, (3, SP)
+092AE: A0 10                sub     A, #0x10
+092B0: 24 0E                jrnc    0x92C0 {_$L93}
+                        ; :: mmcspi.c #248: return
+                        _$L95:
+                        ; :: mmcspi.c #252: SPI_burst()
+092B2: CD 82 F2             call    0x82F2 {SPI_burst}
+                        ; :: mmcspi.c #254: while ( ++seg < (MMC_SECTOR_SIZE/SEGMENT_SIZE) 
+092B5: 0C 03                inc     (3, SP)
+092B7: 7B 03                ld      A, (3, SP)
+092B9: A0 10                sub     A, #0x10
+092BB: 25 F5                jrc     0x92B2 {_$L95}
+                        ; :: mmcspi.c #256: MMC_endAck ()
+092BD: CD 92 C1             call    0x92C1 {MMC_endAck}
+                        _$L93:
+092C0: 81                   ret
+                        (mmcspi.obj line#344, 17 bytes)
+                        MMC_endAck:
+                        ; :: mmcspi.c #262: SPI_read()
+092C1: CD 82 9F             call    0x829F {SPI_read}
+                        ; :: mmcspi.c #263: SPI_read()
+092C4: CD 82 9F             call    0x829F {SPI_read}
+                        ; :: mmcspi.c #265: DISABLE_SD_CARD
+092C7: 72 18 50 00          bset    0x5000, #4
+                        ; :: mmcspi.c #266: SPI_write (0xff)
+092CB: 4B FF                push    #0xFF
+092CD: CD 82 7D             call    0x827D {SPI_write}
+092D0: 84                   pop     A
+092D1: 81                   ret
+                        (timer.obj line#9, 78 bytes)
+                        tm4_isr:
+092D2: BE 00                ldw     X, 0x0
+092D4: 89                   pushw   X
+092D5: BE 02                ldw     X, 0x2
+092D7: 89                   pushw   X
+                        ; :: timer.c #12: TIM4_SR = 0
+092D8: 72 5F 53 42          clr     0x5342
+                        ; :: timer.c #13: Timer0++
+092DC: BE 11                ldw     X, 0x11 {Timer0}
+092DE: 5C                   incw    X
+092DF: BF 11                ldw     0x11 {Timer0}, X
+                        ; :: timer.c #16: switch ( play_state )
+092E1: B6 09                ld      A, 0x9 {play_state}
+                        ; :: timer.c #17: case PLAY_RUN
+092E3: 4D                   tnz     A
+092E4: 27 0A                jreq    0x92F0 {_$L3}
+                        ; :: timer.c #24: case PLAY_READY
+092E6: A1 04                cp      A, #0x4
+092E8: 27 17                jreq    0x9301 {_$L4}
+                        ; :: timer.c #25: case PLAY_PAUSE
+092EA: A1 02                cp      A, #0x2
+092EC: 27 13                jreq    0x9301 {_$L4}
+092EE: 20 17                jra     0x9307 {_$L6}
+                        _$L3:
+                        ; :: timer.c #18: if ( Timer0 & 0x100 
+092F0: 72 01 00 11 06       btjf    0x11 {Timer0}, #0, 0x92FB {_$L8}
+                        ; :: timer.c #19: LED_ON
+092F5: 72 11 50 0F          bres    0x500F, #0
+092F9: 20 1B                jra     0x9316 {_$L12}
+                        _$L8:
+                        ; :: timer.c #21: else                LED_OFF
+092FB: 72 10 50 0F          bset    0x500F, #0
+                        ; :: timer.c #22: break
+092FF: 20 15                jra     0x9316 {_$L12}
+                        _$L4:
+                        ; :: timer.c #26: LED_ON
+09301: 72 11 50 0F          bres    0x500F, #0
+                        ; :: timer.c #27: break
+09305: 20 0F                jra     0x9316 {_$L12}
+                        _$L6:
+                        ; :: timer.c #30: if ( Timer0 & (0x200/8) 
+09307: 72 0D 00 12 06       btjf    0x12, #6, 0x9312 {_$L11}
+                        ; :: timer.c #31: LED_ON
+0930C: 72 11 50 0F          bres    0x500F, #0
+09310: 20 04                jra     0x9316 {_$L12}
+                        _$L11:
+                        ; :: timer.c #33: else                LED_OFF
+09312: 72 10 50 0F          bset    0x500F, #0
+                        _$L12:
+                        ; :: timer.c #36: KEY_scan()
+09316: CD 8D 11             call    0x8D11 {KEY_scan}
+09319: 85                   popw    X
+0931A: BF 02                ldw     0x2, X
+0931C: 85                   popw    X
+0931D: BF 00                ldw     0x0, X
+0931F: 80                   iret
+                        (timer.obj line#56, 21 bytes)
+                        TMR0_Init::
+                        ; :: timer.c #50: #else    TIM4_PSCR = 0x07
+09320: 35 07 53 45          mov     0x5345, #0x7
+                        ; :: timer.c #51: TIM4_ARR  = 0xfe
+09324: 35 FE 53 46          mov     0x5346, #0xFE
+                        ; :: timer.c #52: TIM4_CNTR = 0xe7
+09328: 35 E7 53 44          mov     0x5344, #0xE7
+                        ; :: timer.c #53: TIM4_CR1  = 0x81
+0932C: 35 81 53 40          mov     0x5340, #0x81
+                        ; :: timer.c #54: TIM4_IER  = 0x41
+09330: 35 41 53 41          mov     0x5341, #0x41
+09334: 81                   ret
+                        (_tmp_/crt0.obj line#119, 115 bytes)
+                        _mul32Ptr::
+09335: 52 04                sub     SP, #0x4
+09337: E6 03                ld      A, (3, X)
+09339: 16 09                ldw     Y, (9, SP)
+0933B: 90 42                mul     Y, A
+0933D: 17 03                ldw     (3, SP), Y
+0933F: 16 07                ldw     Y, (7, SP)
+09341: 90 42                mul     Y, A
+09343: 17 01                ldw     (1, SP), Y
+09345: 16 08                ldw     Y, (8, SP)
+09347: 90 42                mul     Y, A
+09349: 72 F9 02             addw    Y, (2, SP)
+0934C: 17 02                ldw     (2, SP), Y
+0934E: 24 02                jrnc    0x9352
+09350: 0C 01                inc     (1, SP)
+09352: 16 06                ldw     Y, (6, SP)
+09354: 90 42                mul     Y, A
+09356: 90 9F                ld      A, YL
+09358: 1B 01                add     A, (1, SP)
+0935A: 6B 01                ld      (1, SP), A
+0935C: E6 02                ld      A, (2, X)
+0935E: 16 09                ldw     Y, (9, SP)
+09360: 90 42                mul     Y, A
+09362: 72 F9 02             addw    Y, (2, SP)
+09365: 17 02                ldw     (2, SP), Y
+09367: 24 02                jrnc    0x936B
+09369: 0C 01                inc     (1, SP)
+0936B: 16 08                ldw     Y, (8, SP)
+0936D: 90 42                mul     Y, A
+0936F: 72 F9 01             addw    Y, (1, SP)
+09372: 17 01                ldw     (1, SP), Y
+09374: 16 07                ldw     Y, (7, SP)
+09376: 90 42                mul     Y, A
+09378: 90 9F                ld      A, YL
+0937A: 1B 01                add     A, (1, SP)
+0937C: 6B 01                ld      (1, SP), A
+0937E: E6 01                ld      A, (1, X)
+09380: 16 09                ldw     Y, (9, SP)
+09382: 90 42                mul     Y, A
+09384: 72 F9 01             addw    Y, (1, SP)
+09387: 17 01                ldw     (1, SP), Y
+09389: 16 08                ldw     Y, (8, SP)
+0938B: 90 42                mul     Y, A
+0938D: 90 9F                ld      A, YL
+0938F: 1B 01                add     A, (1, SP)
+09391: 6B 01                ld      (1, SP), A
+09393: F6                   ld      A, (X)
+09394: 16 09                ldw     Y, (9, SP)
+09396: 90 42                mul     Y, A
+09398: 90 9F                ld      A, YL
+0939A: 1B 01                add     A, (1, SP)
+0939C: 6B 01                ld      (1, SP), A
+0939E: 16 03                ldw     Y, (3, SP)
+093A0: EF 02                ldw     (2, X), Y
+093A2: 16 01                ldw     Y, (1, SP)
+093A4: FF                   ldw     (X), Y
+093A5: 5B 04                add     SP, #0x4
+093A7: 81                   ret
+                        (main.obj line#32, 0 bytes)
+                        _$init$:
+                        (key.obj line#126, 4 bytes)
+093A8: 3F 06                clr     0x6 {KEY_stat}
+093AA: 3F 07                clr     0x7 {KEY_val}
+                        (main.obj line#34, 1 bytes)
+093AC: 81                   ret
+                        (fat.obj line#700, 4 bytes)
+                        _$CS1:
+093AD: 4D 50 33 00
+                        (sound.obj line#4, 836 bytes)
+                        ballon_snd::
+093B1: FF F3 40 C4 00 00 00 03 48 01 80 00 00 F1 3C 08
+093C1: 2B E0 D8 B0 26 FC 64 05 97 F8 B2 C5 E0 8F 3F 1B
+093D1: 22 83 2D FF 86 DC 18 C4 02 85 82 22 7F F8 82 20
+093E1: 1C 2C 0C 28 30 84 70 19 E0 9F FF 80 A4 80 1A 0E
+093F1: 0D 9C 15 B0 5A 90 02 46 0E 85 FF FF 80 D1 50 34
+09401: 23 40 19 D0 19 41 20 70 50 81 C5 32 06 11 20 01
+09411: 3C 01 AD 9F FF FF F8 19 FF F3 42 C4 5B 24 F3 19
+09421: 58 01 91 A0 00 B0 E0 D9 80 E6 0B 38 2D 80 5A C0
+09431: 62 B2 5C B6 35 C4 E6 44 84 29 FF FF FF FE 3B 05
+09441: 0E 20 B0 36 20 2E C0 F5 C5 C8 1E E8 82 40 28 10
+09451: 0B 09 0B 1E 03 1C 00 01 92 00 F0 A0 34 1D 04 E3
+09461: 04 20 00 45 02 81 80 00 00 3C 59 F2 64 D4 EC 13
+09471: F7 BC 41 3C 49 FB C6 58 C3 3F EF DC 7D 50 71 FF
+09481: DE FF F3 40 C4 23 1C CB 1A 61 9F 82 40 00 7C B9
+09491: 06 5D 8C 44 FF B3 FA 72 CF 72 85 EF 0D 07 C1 F4
+094A1: B9 F1 BD F5 90 3F 4F 4A 05 80 BC 28 1F 84 E0 28
+094B1: 0D 01 B8 7B 68 65 5F FC DF 51 35 3C 56 FE 94 23
+094C1: 80 1C 18 19 9E 59 09 C8 79 3F FF FF FF FA 7F A5
+094D1: A5 3F F5 65 9A 45 0B 0A 29 B6 EC 4C 60 FB 2A FF
+094E1: 3F 2E 6A 78 02 82 45 42 5C FF F3 42 C4 0A 16 A2
+094F1: 76 91 8B 81 18 01 C7 01 0A 4A 79 9B 16 D0 D6 92
+09501: 91 05 31 6E E7 CA 66 6F 3D E4 86 74 D5 E4 2C 8C
+09511: BC CC D9 73 2A 8D 51 94 91 03 DE 76 24 06 2D 8A
+09521: D7 C4 C0 C3 C6 4B 7F 9E 45 EE A8 65 3E 7D 81 DC
+09531: 94 9A 45 77 39 4E 26 62 2A FD F7 20 8C E3 E7 DF
+09541: 54 88 17 1E BB 7F BA 00 24 60 15 2A 4A 1D 2A 7C
+09551: A9 2D FF F3 40 C4 0B 16 21 7E 8C 2B 98 A0 00 2E
+09561: 66 03 95 14 B2 9D 04 A6 0E C6 9E 10 33 05 00 50
+09571: A0 CB 81 8D 44 06 A2 B8 12 6E 17 FC 0D 4C 20 58
+09581: 93 26 E3 34 64 4F 2D 1B 20 C6 EB 45 14 BD 37 41
+09591: 0A 4A FF 75 25 5D 0F 6F FB 18 F4 96 8C BA 83 3A
+095A1: F9 64 84 F3 AC FF FD 60 A9 21 61 E1 5A 00 20 0E
+095B1: F3 79 B4 AF FF C0 00 04 54 35 FF F3 42 C4 0D 17
+095C1: 59 7A 74 7F 8F A0 00 75 4A CA A9 6F 2B E9 61 6C
+095D1: 7A 9F 1D 38 3B C0 CA 37 01 62 21 D8 08 0B 02 24
+095E1: C5 00 17 0C 25 43 B6 92 CD AC BD 27 5B D4 CC 9A
+095F1: 90 B9 8E 8B 3D 95 5A 96 8D 14 56 8A 8C 5F D4 67
+09601: AB 99 22 9F D5 35 47 77 9E 0E 96 53 D9 5D 5D 7F
+09611: 09 03 AB 73 44 A5 42 55 00 80 C0 80 40 23 12 09
+09621: 04 4A 44 FF F3 40 C4 0B 17 20 AE 62 5F 8F C0 00
+09631: 03 00 00 6A E9 0D 7D 6F 25 62 45 92 CB A7 37 67
+09641: 25 51 43 23 38 1E 89 A6 97 F9 FF 95 57 A0 CB FE
+09651: 53 5B 9F 8D 6C B0 E7 D9 BF 80 24 2C 28 7E 16 15
+09661: 4D 7A 03 A0 35 0B C5 EB 3B C4 21 B0 C0 38 C6 2B
+09671: F8 A2 CD 80 C0 81 76 19 FF FD 00 30 83 43 86 C1
+09681: 31 65 A4 4D 5A A8 71 64 50 22 26 FF F3 42 C4 09
+09691: 11 D0 B5 84 01 C9 30 00 99 08 A5 92 C1 A8 0A 89
+096A1: A6 15 04 4C 96 04 94 0C 15 60 A0 14 4E 01 61 22
+096B1: 5A 69 14 58 90 08 3A 25 3B 96 3C 25 2A 74 1A 1E
+096C1: 74 15 70 77 D4 78 1A 2A 1A 11 28 F2 FE 85 B8 44
+096D1: B3 A4 BF D8 B3 A5 95 4C 41 4D 45 33 2E 38 32 55
+096E1: 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55
+096F1: 55 55 55 55

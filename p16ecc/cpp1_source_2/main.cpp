@@ -22,7 +22,7 @@ int main(int argc, char *argv[], char *env[])
 
 	for (; env && *env; env++) 	// search for "PATH=" setting
 	{
-		if ( memcmp(*env, "OS=Windows", 10) == 0 )
+		if ( strncasecmp(*env, "OS=Windows", 10) == 0 )
 			inWindows = true;
 		else if ( strncasecmp(*env, "path=", 5) == 0 )
 		{

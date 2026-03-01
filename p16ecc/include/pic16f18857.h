@@ -305,7 +305,7 @@
 
 typedef struct {
 	unsigned char INTEDG	: 1;
-	unsigned char dummy		: 5;
+	unsigned char _			: 5;
 	unsigned char PEIE		: 1;
 	unsigned char GIE		: 1;
 } INTCON_t;
@@ -313,7 +313,7 @@ typedef struct {
 
 typedef struct {
 	unsigned char INTF		: 1;
-	unsigned char dummy		: 3;
+	unsigned char _			: 3;
 	unsigned char IOCIF		: 1;
 	unsigned char TMR0IF	: 1;
 } PIR0_t;
@@ -321,7 +321,7 @@ typedef struct {
 
 typedef struct {
 	unsigned char INTE		: 1;
-	unsigned char dummy		: 3;
+	unsigned char _			: 3;
 	unsigned char ICOIE		: 1;
 	unsigned char TMR0IE	: 1;
 } PIE0_t;
@@ -340,8 +340,44 @@ typedef struct {
 #define SSP1STATbits	(SSP1STAT_t*)(&SSP1STAT)
 
 typedef struct {
+	unsigned char SSPM	: 4;
+	unsigned char SKP	: 1;
+	unsigned char SSPEN	: 1;
+	unsigned char SSPOV	: 1;
+	unsigned char WCOL	: 1;
+} SSP1CON1_t;
+#define SSP1CONbits		(SSP1CON1_t*)(&SSP1CON1)
+#define SSP2CONbits		(SSP1CON1_t*)(&SSP2CON1)
+
+typedef struct {
+	unsigned char SEN	 : 1;
+	unsigned char RSEN	 : 1;
+	unsigned char PEN	 : 1;
+	unsigned char RCEN	 : 1;
+	unsigned char ACKEN	 : 1;
+	unsigned char ACKDT	 : 1;
+	unsigned char ACKSTAT: 1;
+	unsigned char GCEN	 : 1;
+} SSP1CON2_t;
+#define SSP1CON2bits	(SSP1CON2_t*)(&SSP1CON2)
+#define SSP2CON2bits	(SSP1CON2_t*)(&SSP2CON2)
+
+typedef struct {
+	unsigned char DHEN	 : 1;
+	unsigned char AHEN	 : 1;
+	unsigned char SBCDE	 : 1;
+	unsigned char SDAHT	 : 1;
+	unsigned char BOEN	 : 1;
+	unsigned char SCIE	 : 1;
+	unsigned char PCIE	 : 1;
+	unsigned char ACKTIM : 1;
+} SSP1CON3_t;
+#define SSP1CON3bits	(SSP1CON3_t*)(&SSP1CON3)
+#define SSP2CON3bits	(SSP1CON3_t*)(&SSP2CON3)
+
+typedef struct {
 	unsigned char PLLR		: 1;
-	unsigned char dummy		: 1;
+	unsigned char _			: 1;
 	unsigned char ADOR		: 1;
 	unsigned char SOR		: 1;
 	unsigned char LFOR		: 1;
@@ -352,7 +388,7 @@ typedef struct {
 #define OSCSTATbits		(OSCSTAT_t*)(&OSCSTAT)
 
 typedef struct {
-	unsigned char dummy	: 2;
+	unsigned char _		: 2;
 	unsigned char ADOEN	: 1;
 	unsigned char SOSCEN: 1;
 	unsigned char LFOEN	: 1;
@@ -362,7 +398,28 @@ typedef struct {
 } OSCEN_t;
 #define OSCENbits		(OSCEN_t*)(&OSCEN)
 
+typedef struct {
+	unsigned char HFFRQ: 3;
+} OSCFRQ_t;
+#define OSCFRQbits		(OSCFRQ_t*)(&OSCFRQ)
 
+typedef struct {
+	unsigned char T0OUTPS: 4;
+	unsigned char T016BIT: 1;
+	unsigned char T0OUT  : 1;
+	unsigned char _		 : 1;
+	unsigned char T0EN	 : 1;
+} T0CON0_t;
+#define T0CON0bits		(T0CON0_t*)(&T0CON0)
+
+typedef struct {
+	unsigned char T0CKPS : 4;
+	unsigned char T0ASYNC: 1;
+	unsigned char T0CS 	 : 3;
+} T0CON1_t;
+#define T0CON1bits		(T0CON1_t*)(&T0CON1)
+
+///////////////////////////////////////////////////////////////
 #define FUSE1          		(0x8007)
 	#define 				FCMEM_OFF		0x1fff
 	#define					CSWEN_OFF		0x2fff
