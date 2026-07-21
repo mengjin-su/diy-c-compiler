@@ -1,9 +1,9 @@
-#ifndef _STM8S105C6_H
-#define _STM8S105C6_H
+#ifndef _STM8S105x6_H
+#define _STM8S105x6_H
 
 #include <stm8s.h>
 
-#define __DEVICE "stm8s105c6"
+#define __DEVICE "stm8s105x6"
 
 #define __RAM_SIZE			2048
 #define __FLASH_SIZE    	(32*1024)
@@ -219,6 +219,15 @@
 #define UART2_CR6	REG8(0x5249)
 #define UART2_GTR	REG8(0x524a)
 #define UART2_PSCR	REG8(0x524b)
+
+#define UART2_SRbits	(UART_SR_t*)(&UART2_SR)
+#define UART2_CR1bits	(UART_CR1_t*)(&UART2_CR1)
+#define UART2_CR2bits	(UART_CR2_t*)(&UART2_CR2)
+#define UART2_CR3bits	(UART_CR3_t*)(&UART2_CR3)
+#define UART2_CR4bits	(UART_CR4_t*)(&UART2_CR4)
+#define UART2_CR6bits	(UART_CR6_t*)(&UART2_CR6)
+#define UART2_BRR1bits	(UART_BRR1_t*)(&UART2_BRR1)
+#define UART2_BRR2bits	(UART_BRR2_t*)(&UART2_BRR2)
 
 #define TIM1_CR1	REG8(0x5250)
 #define TIM1_CR2	REG8(0x5251)

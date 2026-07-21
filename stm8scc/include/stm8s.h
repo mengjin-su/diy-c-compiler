@@ -166,6 +166,10 @@ typedef struct {
 } UART_SR_t;
 
 typedef struct {
+	char UART_DIV11_4: 8;
+} UART_BRR1_t;
+
+typedef struct {
 	char UART_DIV3_0: 4;
 	char UART_DIV15_12: 4;
 } UART_BRR2_t;
